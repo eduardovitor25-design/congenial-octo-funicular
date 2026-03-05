@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Isekai Procedural RPG - Alfa 0.1</title>
+
+<style>
+body{
+    background:#111;
+    color:#eee;
+    font-family:Arial;
+    padding:20px;
+}
+#game{
+    max-width:700px;
+    margin:auto;
+    background:#1b1b1b;
+    padding:20px;
+    border-radius:10px;
+}
+button{
+    margin:5px;
+    padding:10px;
+    background:#333;
+    color:white;
+    border:none;
+    cursor:pointer;
+}
+button:hover{
+    background:#555;
+}
+.stats{
+    background:#222;
+    padding:10px;
+    margin-bottom:10px;
+}
+.log{
+    background:#000;
+    padding:10px;
+    height:200px;
+    overflow-y:auto;
+    margin-top:10px;
+}
+</style>
+</head>
+
+<body>
+
+<div id="game">
+    <h2>🌌 Isekai Procedural RPG</h2>
+
+    <div class="stats">
+        ❤️ HP: <span id="hp"></span> |
+        💰 Ouro: <span id="gold"></span> |
+        ⭐ Reputação: <span id="rep"></span>
+    </div>
+
+    <div id="story"></div>
+
+    <div id="choices"></div>
+
+    <div class="log" id="log"></div>
+</div>
+
+<script>
+let player = {
+    hp: 100,
+    gold: 10,
+    rep: 0,
+    power: Math.floor(Math.random()*5)+3
+};
+
+function updateStats(){
+    document.getElementById("hp").innerText = player.hp;
+    document.getElementById("gold").innerText = player.gold;
+    document.getElementById("rep").innerText = player.rep;
+}
+
+function log(text){
+    let logBox = document.getElementById("log");
+    logBox.innerHTML += text + "<br>";
+    logBox.scrollTop = logBox.scrollHeight;
+}
+
+function clearChoices(){
+    document.getElementById("choices").innerHTML = "";
+}
+
+function addChoice(text, action){
+    let btn = document.createElement("button");
+    btn.innerText = text;
+    btn.onclick = action;
+    document.getElementById("choices").appendChild(btn);
+}
+
+function startGame(){
+    updateStats();
+    log("Você foi invocado em um mundo desconhecido...");
+    mainEvent();
+}
+
+function mainEvent(){
+    clearChoices();
+    document.getElementById("story").innerText = 
+    "Você está em uma vila pequena. O que deseja fazer?";
+
+    addChoice("Explorar floresta", forestEvent);
+    addChoice("Ir à taverna", tavernEvent);
+    addChoice("Procurar trabalho", jobEvent);
+}
+
+function forestEvent(){
+    clearChoices();
+    let encounter = Math.random();
+
+    if(encounter < 0.5){
+        document.getElementById("story").innerText = 
+        "Um goblin apareceu!";
+        addChoice("Lutar", fightGoblin);
+        addChoice("Fugir", mainEvent);
+    } else {
+        document.getElementById("story").innerText = 
+        "Você encontrou um baú abandonado.";
+        player.gold += 15;
+        log("Você ganhou 15 de ouro.");
+        updateStats();
+        addChoice("Voltar", mainEvent);
+    }
+}
+
+function fightGoblin(){
+    let enemyHP = 30;
+    let damage = Math.floor(Math.random()*player.power)+5;
+    enemyHP -= damage;
+
+    if(enemyHP <= 0){
+        player.gold += 20;
+        player.rep += 1;
+        log("Goblin derrotado! +20 ouro, +1 reputação.");
+    } else {
+        player.hp -= 15;
+        log("Você foi ferido! -15 HP.");
+    }
+
+    updateStats();
+    checkDeath();
+    addChoice("Voltar", mainEvent);
+}
+
+function tavernEvent(){
+    clearChoices();
+    document.getElementById("story").innerText =
+    "Na taverna, um mercador oferece um contrato suspeito.";
+
+    addChoice("Aceitar contrato (+ouro / risco)", function(){
+        let chance = Math.random();
+        if(chance > 0.5){
+            player.gold += 30;
+            player.rep += 2;
+            log("Contrato bem-sucedido!");
+        } else {
+            player.hp -= 20;
+            log("Era uma armadilha!");
+        }
+        updateStats();
+        checkDeath();
+        mainEvent();
+    });
+
+    addChoice("Recusar", mainEvent);
+}
+
+function jobEvent(){
+    clearChoices();
+    document.getElementById("story").innerText =
+    "Um fazendeiro precisa de ajuda contra lobos.";
+
+    addChoice("Ajudar", function(){
+        player.gold += 10;
+        player.rep += 1;
+        log("Você ajudou o fazendeiro.");
+        updateStats();
+        mainEvent();
+    });
+
+    addChoice("Ignorar", mainEvent);
+}
+
+function checkDeath(){
+    if(player.hp <= 0){
+        alert("Você morreu. Fim de jogo.");
+        location.reload();
+    }
+}
+
+startGame();
+</script>
+
+</body>
+</html>
