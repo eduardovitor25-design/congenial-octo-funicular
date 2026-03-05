@@ -8,118 +8,83 @@
 
 body{
 background:#0f0e0c;
-font-family:Georgia, serif;
+font-family:Georgia,serif;
 color:#e6dcc6;
 margin:0;
-padding:0;
 }
 
-/* versão */
+h1{
+text-align:center;
+color:#c6a85a;
+}
 
 .version{
 position:fixed;
 bottom:5px;
 right:10px;
-font-size:12px;
 opacity:0.6;
+font-size:12px;
 }
-
-/* layout */
 
 #game{
-
 width:95%;
-max-width:1400px;
+max-width:1500px;
 margin:auto;
-margin-top:20px;
-
 display:grid;
-grid-template-columns:300px 1fr 320px;
-grid-gap:20px;
-
+grid-template-columns:280px 1fr 280px;
+gap:15px;
 }
-
-/* painéis */
 
 .panel{
 background:#1b1a16;
 border:1px solid #3a3528;
 border-radius:8px;
-padding:15px;
+padding:12px;
 }
-
-/* título */
-
-h1{
-text-align:center;
-color:#c6a85a;
-margin-top:10px;
-}
-
-/* stats */
-
-.stat{
-margin-bottom:6px;
-}
-
-/* área 3D */
 
 #world{
-
 height:420px;
 background:linear-gradient(#2a261c,#15130e);
 border-radius:10px;
 position:relative;
 overflow:hidden;
+margin-bottom:10px;
 }
 
-/* chão */
+.player{
+width:60px;
+height:90px;
+background:#c6a85a;
+position:absolute;
+bottom:70px;
+left:45%;
+}
+
+.enemy{
+width:60px;
+height:90px;
+background:#7a1f1f;
+position:absolute;
+bottom:70px;
+right:25%;
+}
 
 .ground{
 position:absolute;
 bottom:0;
+height:110px;
 width:100%;
-height:120px;
 background:#3a3426;
-transform:perspective(400px) rotateX(50deg);
+transform:perspective(400px) rotateX(55deg);
 }
-
-/* personagem */
-
-.player{
-width:60px;
-height:100px;
-background:#c6a85a;
-position:absolute;
-bottom:80px;
-left:48%;
-border-radius:5px;
-}
-
-/* inimigo */
-
-.enemy{
-width:60px;
-height:100px;
-background:#7a1f1f;
-position:absolute;
-bottom:80px;
-right:20%;
-border-radius:5px;
-}
-
-/* botões */
 
 button{
-
 width:100%;
-padding:10px;
-margin-top:6px;
-
+margin-top:5px;
+padding:8px;
 background:#2c2920;
-color:#e6dcc6;
 border:1px solid #4a4432;
-
+color:#e6dcc6;
 cursor:pointer;
 }
 
@@ -127,26 +92,17 @@ button:hover{
 background:#3c372a;
 }
 
-/* história */
-
-#story{
-min-height:120px;
-line-height:1.5em;
+#log{
+height:260px;
+overflow:auto;
+background:#0b0b0b;
+padding:8px;
+border-radius:6px;
+font-size:14px;
 }
 
-/* log */
-
-#log{
-
-height:300px;
-overflow:auto;
-
-background:#0b0b0b;
-padding:10px;
-
-font-size:14px;
-border-radius:6px;
-
+#inventory{
+min-height:120px;
 }
 
 </style>
@@ -158,40 +114,36 @@ border-radius:6px;
 
 <div id="game">
 
-<!-- personagem -->
-
 <div class="panel">
 
 <h3>Personagem</h3>
 
-<div class="stat">HP: <span id="hp"></span></div>
-<div class="stat">Força: <span id="str"></span></div>
-<div class="stat">Mente: <span id="mind"></span></div>
-<div class="stat">Ouro: <span id="gold"></span></div>
-
-<hr>
-
-<div class="stat">Reputação Vila: <span id="repVillage"></span></div>
-<div class="stat">Reputação Nobre: <span id="repNoble"></span></div>
-<div class="stat">Corrupção: <span id="corruption"></span></div>
+<div>HP: <span id="hp"></span></div>
+<div>Nível: <span id="level"></span></div>
+<div>XP: <span id="xp"></span></div>
+<div>Força: <span id="str"></span></div>
+<div>Mente: <span id="mind"></span></div>
+<div>Ouro: <span id="gold"></span></div>
 
 <hr>
 
 <div>Origem: <span id="origin"></span></div>
 <div>Poder: <span id="ability"></span></div>
 
-</div>
+<hr>
 
-<!-- mundo -->
+<div>Vila: <span id="repVillage"></span></div>
+<div>Nobreza: <span id="repNoble"></span></div>
+<div>Corrupção: <span id="corruption"></span></div>
+
+</div>
 
 <div class="panel">
 
 <div id="world">
 
 <div class="ground"></div>
-
 <div class="player"></div>
-
 <div id="enemyBox"></div>
 
 </div>
@@ -202,9 +154,22 @@ border-radius:6px;
 
 </div>
 
-<!-- log -->
-
 <div class="panel">
+
+<h3>Inventário</h3>
+
+<div id="inventory"></div>
+
+<hr>
+
+<h3>Mapa</h3>
+
+<button onclick="goLocation('vila')">Vila</button>
+<button onclick="goLocation('floresta')">Floresta</button>
+<button onclick="goLocation('ruinas')">Ruínas</button>
+<button onclick="goLocation('cidade')">Cidade</button>
+
+<hr>
 
 <h3>Crônicas</h3>
 
@@ -214,26 +179,29 @@ border-radius:6px;
 
 </div>
 
-<div class="version">
-version 1.0
-</div>
+<div class="version">version 2.0</div>
 
 <script>
 
 let player={
 
 hp:100,
+level:1,
+xp:0,
+
 str:5,
 mind:5,
+
 gold:20,
+
+origin:"",
+ability:"",
 
 repVillage:0,
 repNoble:0,
-
 corruption:0,
 
-origin:"",
-ability:""
+inventory:[]
 
 }
 
@@ -256,7 +224,9 @@ player=JSON.parse(save)
 function log(t){
 
 let box=document.getElementById("log")
+
 box.innerHTML+=t+"<br>"
+
 box.scrollTop=box.scrollHeight
 
 }
@@ -264,18 +234,67 @@ box.scrollTop=box.scrollHeight
 function update(){
 
 document.getElementById("hp").innerText=player.hp
+document.getElementById("level").innerText=player.level
+document.getElementById("xp").innerText=player.xp
 document.getElementById("str").innerText=player.str
 document.getElementById("mind").innerText=player.mind
 document.getElementById("gold").innerText=player.gold
+
+document.getElementById("origin").innerText=player.origin
+document.getElementById("ability").innerText=player.ability
 
 document.getElementById("repVillage").innerText=player.repVillage
 document.getElementById("repNoble").innerText=player.repNoble
 document.getElementById("corruption").innerText=player.corruption
 
-document.getElementById("origin").innerText=player.origin
-document.getElementById("ability").innerText=player.ability
+renderInventory()
 
 saveGame()
+
+}
+
+function renderInventory(){
+
+let box=document.getElementById("inventory")
+
+box.innerHTML=""
+
+player.inventory.forEach(item=>{
+
+let div=document.createElement("div")
+
+div.innerText=item
+
+box.appendChild(div)
+
+})
+
+}
+
+function addItem(item){
+
+player.inventory.push(item)
+
+log("Item encontrado: "+item)
+
+}
+
+function gainXP(x){
+
+player.xp+=x
+
+if(player.xp>=100){
+
+player.level++
+
+player.xp=0
+
+player.str+=1
+player.mind+=1
+
+log("Você subiu de nível!")
+
+}
 
 }
 
@@ -285,114 +304,36 @@ document.getElementById("choices").innerHTML=""
 
 }
 
-function addChoice(text,action){
+function addChoice(t,a){
 
 let btn=document.createElement("button")
-btn.innerText=text
-btn.onclick=action
+
+btn.innerText=t
+btn.onclick=a
 
 document.getElementById("choices").appendChild(btn)
 
 }
 
-/* geração */
+function spawnEnemy(){
 
-function generateOrigin(){
-
-let list=[
-
-"Filho de Ferreiro",
-"Nobre Caído",
-"Mercenário",
-"Invocação Falha",
-"Camponês Endividado"
-
-]
-
-player.origin=list[Math.floor(Math.random()*list.length)]
+document.getElementById("enemyBox").innerHTML='<div class="enemy"></div>'
 
 }
 
-function generateAbility(){
-
-let list=[
-
-"Drenar Vida",
-"Olhos do Futuro",
-"Contrato Sombrio",
-"Fúria Abissal"
-
-]
-
-player.ability=list[Math.floor(Math.random()*list.length)]
-
-}
-
-/* MENU */
-
-function mainMenu(){
-
-clearChoices()
+function clearEnemy(){
 
 document.getElementById("enemyBox").innerHTML=""
 
-document.getElementById("story").innerText=
-"O que você deseja fazer?"
-
-addChoice("Explorar floresta",forest)
-
-addChoice("Ir à cidade",city)
-
-addChoice("Missão da vila",quest)
-
-addChoice("Treinar",train)
-
 }
-
-/* FLORESTA */
-
-function forest(){
-
-clearChoices()
-
-let r=Math.random()
-
-if(r<0.5){
-
-spawnEnemy()
-
-combat("Lobo",40,7)
-
-}else{
-
-player.gold+=10
-log("Você encontrou moedas antigas.")
-
-update()
-
-mainMenu()
-
-}
-
-}
-
-/* inimigo visual */
-
-function spawnEnemy(){
-
-document.getElementById("enemyBox").innerHTML=
-'<div class="enemy"></div>'
-
-}
-
-/* combate */
 
 function combat(name,hp,dmg){
 
 clearChoices()
 
-document.getElementById("story").innerText=
-name+" aparece!"
+spawnEnemy()
+
+document.getElementById("story").innerText=name+" aparece!"
 
 addChoice("Atacar",function(){
 
@@ -404,9 +345,13 @@ log("Você causa "+damage)
 
 if(hp<=0){
 
-player.gold+=20
+clearEnemy()
 
 log(name+" derrotado!")
+
+player.gold+=15
+
+gainXP(30)
 
 update()
 
@@ -428,23 +373,96 @@ combat(name,hp,dmg)
 
 })
 
-addChoice("Fugir",mainMenu)
+addChoice("Fugir",function(){
+
+clearEnemy()
+
+mainMenu()
+
+})
 
 }
 
-/* cidade */
+function randomEvent(){
 
-function city(){
+let events=[
+
+function(){
+
+combat("Lobo",40,7)
+
+},
+
+function(){
+
+player.gold+=15
+
+log("Você encontra moedas antigas.")
+
+},
+
+function(){
+
+addItem("Poção")
+
+},
+
+function(){
+
+player.str+=1
+log("Treinamento improvisado aumenta força.")
+
+},
+
+function(){
+
+player.mind+=1
+log("Você encontra um livro antigo.")
+
+}
+
+]
+
+let e=events[Math.floor(Math.random()*events.length)]
+
+e()
+
+update()
+
+}
+
+function goLocation(loc){
 
 clearChoices()
 
-document.getElementById("story").innerText=
-"Intrigas políticas circulam na cidade."
+if(loc=="floresta"){
 
-addChoice("Ajudar nobre",function(){
+document.getElementById("story").innerText="Você entra na floresta."
 
-player.repNoble+=2
-player.gold+=15
+randomEvent()
+
+}
+
+if(loc=="vila"){
+
+document.getElementById("story").innerText="A vila está calma."
+
+player.repVillage+=1
+
+log("Moradores confiam mais em você.")
+
+update()
+
+mainMenu()
+
+}
+
+if(loc=="cidade"){
+
+document.getElementById("story").innerText="Intrigas na cidade."
+
+player.repNoble+=1
+player.gold+=10
 
 log("Um nobre paga por sua ajuda.")
 
@@ -452,45 +470,36 @@ update()
 
 mainMenu()
 
-})
+}
 
-addChoice("Espionar",function(){
+if(loc=="ruinas"){
 
-player.mind+=1
-player.corruption+=2
+document.getElementById("story").innerText="Ruínas antigas."
 
-log("Segredos descobertos.")
-
-update()
-
-mainMenu()
-
-})
+combat("Guardião Antigo",60,10)
 
 }
 
-/* missão */
-
-function quest(){
-
-spawnEnemy()
-
-combat("Bandido",50,8)
-
 }
 
-/* treino */
+function mainMenu(){
 
-function train(){
+clearChoices()
+
+document.getElementById("story").innerText="O que deseja fazer?"
+
+addChoice("Explorar evento",randomEvent)
+
+addChoice("Treinar",function(){
 
 player.str+=1
 player.mind+=1
 
-log("Treinamento melhora seus atributos.")
+log("Treinamento melhora atributos.")
 
 update()
 
-mainMenu()
+})
 
 }
 
@@ -508,7 +517,21 @@ location.reload()
 
 }
 
-/* iniciar */
+function generateOrigin(){
+
+let list=["Ferreiro","Nobre Caído","Mercenário","Invocação Falha"]
+
+player.origin=list[Math.floor(Math.random()*list.length)]
+
+}
+
+function generateAbility(){
+
+let list=["Drenar Vida","Olhos do Futuro","Contrato Sombrio"]
+
+player.ability=list[Math.floor(Math.random()*list.length)]
+
+}
 
 function start(){
 
