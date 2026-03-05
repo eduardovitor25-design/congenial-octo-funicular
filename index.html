@@ -2,22 +2,53 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
-<title>Crônicas de Eldoria</title>
-
+<title>Crônicas de Eldoria — Rimlike Proto</title>
 <style>
-
 body{
 background:#0f0e0c;
-font-family:Georgia,serif;
 color:#e6dcc6;
+font-family:Georgia,serif;
 margin:0;
+display:flex;
+flex-direction:column;
+align-items:center;
 }
-
-h1{
-text-align:center;
-color:#c6a85a;
+h1{color:#c6a85a;margin:10px;}
+#game{
+display:flex;
+gap:20px;
 }
-
+#map{
+display:grid;
+grid-template-columns:repeat(20,32px);
+grid-template-rows:repeat(20,32px);
+gap:1px;
+background:#222;
+}
+.tile{
+width:32px;height:32px;
+display:flex;align-items:center;justify-content:center;
+font-size:18px;
+}
+.grass{background:#2c3e2c;}
+.tree{background:#1c2a1c;}
+.player{background:#c6a85a;}
+.enemy{background:#7a1f1f;}
+.item{background:#444;}
+#panel{
+width:260px;
+background:#1b1a16;
+padding:10px;
+border:1px solid #3a3528;
+}
+#log{
+height:200px;
+overflow:auto;
+background:#0b0b0b;
+padding:6px;
+margin-top:10px;
+font-size:13px;
+}
 .version{
 position:fixed;
 bottom:5px;
@@ -25,534 +56,286 @@ right:10px;
 opacity:0.6;
 font-size:12px;
 }
-
-#game{
-width:95%;
-max-width:1500px;
-margin:auto;
-display:grid;
-grid-template-columns:280px 1fr 280px;
-gap:15px;
-}
-
-.panel{
-background:#1b1a16;
-border:1px solid #3a3528;
-border-radius:8px;
-padding:12px;
-}
-
-#world{
-height:420px;
-background:linear-gradient(#2a261c,#15130e);
-border-radius:10px;
-position:relative;
-overflow:hidden;
-margin-bottom:10px;
-}
-
-.player{
-width:60px;
-height:90px;
-background:#c6a85a;
-position:absolute;
-bottom:70px;
-left:45%;
-}
-
-.enemy{
-width:60px;
-height:90px;
-background:#7a1f1f;
-position:absolute;
-bottom:70px;
-right:25%;
-}
-
-.ground{
-position:absolute;
-bottom:0;
-height:110px;
-width:100%;
-background:#3a3426;
-transform:perspective(400px) rotateX(55deg);
-}
-
-button{
-width:100%;
-margin-top:5px;
-padding:8px;
-background:#2c2920;
-border:1px solid #4a4432;
-color:#e6dcc6;
-cursor:pointer;
-}
-
-button:hover{
-background:#3c372a;
-}
-
-#log{
-height:260px;
-overflow:auto;
-background:#0b0b0b;
-padding:8px;
-border-radius:6px;
-font-size:14px;
-}
-
-#inventory{
-min-height:120px;
-}
-
 </style>
 </head>
-
 <body>
 
 <h1>Crônicas de Eldoria</h1>
 
 <div id="game">
 
-<div class="panel">
+<div id="map"></div>
 
-<h3>Personagem</h3>
-
+<div id="panel">
 <div>HP: <span id="hp"></span></div>
-<div>Nível: <span id="level"></span></div>
-<div>XP: <span id="xp"></span></div>
 <div>Força: <span id="str"></span></div>
-<div>Mente: <span id="mind"></span></div>
 <div>Ouro: <span id="gold"></span></div>
 
 <hr>
 
-<div>Origem: <span id="origin"></span></div>
-<div>Poder: <span id="ability"></span></div>
+<div>Inventário:</div>
+<div id="inv"></div>
 
 <hr>
 
-<div>Vila: <span id="repVillage"></span></div>
-<div>Nobreza: <span id="repNoble"></span></div>
-<div>Corrupção: <span id="corruption"></span></div>
-
-</div>
-
-<div class="panel">
-
-<div id="world">
-
-<div class="ground"></div>
-<div class="player"></div>
-<div id="enemyBox"></div>
-
-</div>
-
-<div id="story"></div>
-
-<div id="choices"></div>
-
-</div>
-
-<div class="panel">
-
-<h3>Inventário</h3>
-
-<div id="inventory"></div>
-
-<hr>
-
-<h3>Mapa</h3>
-
-<button onclick="goLocation('vila')">Vila</button>
-<button onclick="goLocation('floresta')">Floresta</button>
-<button onclick="goLocation('ruinas')">Ruínas</button>
-<button onclick="goLocation('cidade')">Cidade</button>
-
-<hr>
-
-<h3>Crônicas</h3>
+<div>Controles:</div>
+<div>WASD ou Setas</div>
 
 <div id="log"></div>
-
 </div>
 
 </div>
 
-<div class="version">version 2.0</div>
+<div class="version">proto 0.4</div>
 
 <script>
 
+const size=20
+let map=[]
+let enemies=[]
+let items=[]
+
 let player={
-
+x:10,
+y:10,
 hp:100,
-level:1,
-xp:0,
-
 str:5,
-mind:5,
-
-gold:20,
-
-origin:"",
-ability:"",
-
-repVillage:0,
-repNoble:0,
-corruption:0,
-
-inventory:[]
-
-}
-
-function saveGame(){
-
-localStorage.setItem("isekaiSave",JSON.stringify(player))
-
-}
-
-function loadGame(){
-
-let save=localStorage.getItem("isekaiSave")
-
-if(save){
-player=JSON.parse(save)
-}
-
+gold:0,
+inv:[]
 }
 
 function log(t){
-
 let box=document.getElementById("log")
-
 box.innerHTML+=t+"<br>"
-
 box.scrollTop=box.scrollHeight
+}
+
+function createMap(){
+
+for(let y=0;y<size;y++){
+map[y]=[]
+for(let x=0;x<size;x++){
+
+let r=Math.random()
+
+if(r<0.1){
+map[y][x]="tree"
+}else{
+map[y][x]="grass"
+}
+
+}
+}
 
 }
 
-function update(){
+function spawnEnemies(){
+
+for(let i=0;i<6;i++){
+
+enemies.push({
+x:Math.floor(Math.random()*size),
+y:Math.floor(Math.random()*size),
+hp:20
+})
+
+}
+
+}
+
+function spawnItems(){
+
+for(let i=0;i<5;i++){
+
+items.push({
+x:Math.floor(Math.random()*size),
+y:Math.floor(Math.random()*size),
+type:"gold"
+})
+
+}
+
+}
+
+function draw(){
+
+const mapDiv=document.getElementById("map")
+mapDiv.innerHTML=""
+
+for(let y=0;y<size;y++){
+for(let x=0;x<size;x++){
+
+let tile=document.createElement("div")
+tile.className="tile "+map[y][x]
+
+if(player.x===x && player.y===y){
+tile.className="tile player"
+tile.innerText="🙂"
+}
+
+enemies.forEach(e=>{
+if(e.x===x && e.y===y){
+tile.className="tile enemy"
+tile.innerText="🐺"
+}
+})
+
+items.forEach(i=>{
+if(i.x===x && i.y===y){
+tile.className="tile item"
+tile.innerText="💰"
+}
+})
+
+mapDiv.appendChild(tile)
+
+}
+}
+
+updatePanel()
+
+}
+
+function updatePanel(){
 
 document.getElementById("hp").innerText=player.hp
-document.getElementById("level").innerText=player.level
-document.getElementById("xp").innerText=player.xp
 document.getElementById("str").innerText=player.str
-document.getElementById("mind").innerText=player.mind
 document.getElementById("gold").innerText=player.gold
 
-document.getElementById("origin").innerText=player.origin
-document.getElementById("ability").innerText=player.ability
-
-document.getElementById("repVillage").innerText=player.repVillage
-document.getElementById("repNoble").innerText=player.repNoble
-document.getElementById("corruption").innerText=player.corruption
-
-renderInventory()
-
-saveGame()
+let inv=document.getElementById("inv")
+inv.innerHTML=""
+player.inv.forEach(i=>{
+let d=document.createElement("div")
+d.innerText=i
+inv.appendChild(d)
+})
 
 }
 
-function renderInventory(){
+function move(dx,dy){
 
-let box=document.getElementById("inventory")
+let nx=player.x+dx
+let ny=player.y+dy
 
-box.innerHTML=""
+if(nx<0||ny<0||nx>=size||ny>=size)return
+if(map[ny][nx]=="tree")return
 
-player.inventory.forEach(item=>{
+player.x=nx
+player.y=ny
 
-let div=document.createElement("div")
+checkItems()
+checkEnemies()
 
-div.innerText=item
+draw()
 
-box.appendChild(div)
+}
+
+function checkItems(){
+
+items=items.filter(i=>{
+
+if(i.x===player.x && i.y===player.y){
+
+player.gold+=10
+player.inv.push("moeda antiga")
+log("Você encontrou ouro!")
+
+return false
+
+}
+
+return true
 
 })
 
 }
 
-function addItem(item){
+function checkEnemies(){
 
-player.inventory.push(item)
+enemies.forEach(e=>{
 
-log("Item encontrado: "+item)
+if(e.x===player.x && e.y===player.y){
 
-}
-
-function gainXP(x){
-
-player.xp+=x
-
-if(player.xp>=100){
-
-player.level++
-
-player.xp=0
-
-player.str+=1
-player.mind+=1
-
-log("Você subiu de nível!")
+combat(e)
 
 }
 
-}
-
-function clearChoices(){
-
-document.getElementById("choices").innerHTML=""
+})
 
 }
 
-function addChoice(t,a){
+function combat(enemy){
 
-let btn=document.createElement("button")
+log("Um lobo ataca!")
 
-btn.innerText=t
-btn.onclick=a
+let dmg=player.str+Math.floor(Math.random()*5)
 
-document.getElementById("choices").appendChild(btn)
+enemy.hp-=dmg
 
-}
+log("Você causa "+dmg)
 
-function spawnEnemy(){
+if(enemy.hp<=0){
 
-document.getElementById("enemyBox").innerHTML='<div class="enemy"></div>'
-
-}
-
-function clearEnemy(){
-
-document.getElementById("enemyBox").innerHTML=""
-
-}
-
-function combat(name,hp,dmg){
-
-clearChoices()
-
-spawnEnemy()
-
-document.getElementById("story").innerText=name+" aparece!"
-
-addChoice("Atacar",function(){
-
-let damage=player.str+Math.floor(Math.random()*6)
-
-hp-=damage
-
-log("Você causa "+damage)
-
-if(hp<=0){
-
-clearEnemy()
-
-log(name+" derrotado!")
+log("Lobo morto")
 
 player.gold+=15
 
-gainXP(30)
-
-update()
-
-mainMenu()
+enemies=enemies.filter(x=>x!==enemy)
 
 }else{
 
-player.hp-=dmg
-
-log(name+" causa "+dmg)
-
-update()
-
-checkDeath()
-
-combat(name,hp,dmg)
+player.hp-=5
+log("Você sofre 5 dano")
 
 }
-
-})
-
-addChoice("Fugir",function(){
-
-clearEnemy()
-
-mainMenu()
-
-})
-
-}
-
-function randomEvent(){
-
-let events=[
-
-function(){
-
-combat("Lobo",40,7)
-
-},
-
-function(){
-
-player.gold+=15
-
-log("Você encontra moedas antigas.")
-
-},
-
-function(){
-
-addItem("Poção")
-
-},
-
-function(){
-
-player.str+=1
-log("Treinamento improvisado aumenta força.")
-
-},
-
-function(){
-
-player.mind+=1
-log("Você encontra um livro antigo.")
-
-}
-
-]
-
-let e=events[Math.floor(Math.random()*events.length)]
-
-e()
-
-update()
-
-}
-
-function goLocation(loc){
-
-clearChoices()
-
-if(loc=="floresta"){
-
-document.getElementById("story").innerText="Você entra na floresta."
-
-randomEvent()
-
-}
-
-if(loc=="vila"){
-
-document.getElementById("story").innerText="A vila está calma."
-
-player.repVillage+=1
-
-log("Moradores confiam mais em você.")
-
-update()
-
-mainMenu()
-
-}
-
-if(loc=="cidade"){
-
-document.getElementById("story").innerText="Intrigas na cidade."
-
-player.repNoble+=1
-player.gold+=10
-
-log("Um nobre paga por sua ajuda.")
-
-update()
-
-mainMenu()
-
-}
-
-if(loc=="ruinas"){
-
-document.getElementById("story").innerText="Ruínas antigas."
-
-combat("Guardião Antigo",60,10)
-
-}
-
-}
-
-function mainMenu(){
-
-clearChoices()
-
-document.getElementById("story").innerText="O que deseja fazer?"
-
-addChoice("Explorar evento",randomEvent)
-
-addChoice("Treinar",function(){
-
-player.str+=1
-player.mind+=1
-
-log("Treinamento melhora atributos.")
-
-update()
-
-})
-
-}
-
-function checkDeath(){
 
 if(player.hp<=0){
-
-alert("Você morreu.")
-
-localStorage.removeItem("isekaiSave")
-
+alert("Você morreu")
 location.reload()
-
 }
 
 }
 
-function generateOrigin(){
+function moveEnemies(){
 
-let list=["Ferreiro","Nobre Caído","Mercenário","Invocação Falha"]
+enemies.forEach(e=>{
 
-player.origin=list[Math.floor(Math.random()*list.length)]
+let dx=Math.floor(Math.random()*3)-1
+let dy=Math.floor(Math.random()*3)-1
+
+let nx=e.x+dx
+let ny=e.y+dy
+
+if(nx>=0&&ny>=0&&nx<size&&ny<size){
+if(map[ny][nx]!=="tree"){
+e.x=nx
+e.y=ny
+}
+}
+
+})
+
+draw()
 
 }
 
-function generateAbility(){
+document.addEventListener("keydown",e=>{
 
-let list=["Drenar Vida","Olhos do Futuro","Contrato Sombrio"]
+if(e.key=="w"||e.key=="ArrowUp")move(0,-1)
+if(e.key=="s"||e.key=="ArrowDown")move(0,1)
+if(e.key=="a"||e.key=="ArrowLeft")move(-1,0)
+if(e.key=="d"||e.key=="ArrowRight")move(1,0)
 
-player.ability=list[Math.floor(Math.random()*list.length)]
+})
 
-}
+createMap()
+spawnEnemies()
+spawnItems()
+draw()
 
-function start(){
+setInterval(moveEnemies,1200)
 
-loadGame()
-
-if(!player.origin){
-
-generateOrigin()
-generateAbility()
-
-}
-
-update()
-
-log("Bem vindo a Eldoria.")
-
-mainMenu()
-
-}
-
-start()
+log("Bem-vindo a Eldoria.")
 
 </script>
 
