@@ -2,296 +2,535 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
-<title>Isekai Procedural RPG - Alfa 0.5</title>
+<title>Crônicas de Eldoria</title>
 
 <style>
+
 body{
-    background:linear-gradient(#0f0f0f,#1a1a1a);
-    color:#eee;
-    font-family:Georgia;
-    padding:20px;
+background:#0f0e0c;
+font-family:Georgia, serif;
+color:#e6dcc6;
+margin:0;
+padding:0;
 }
+
+/* versão */
+
+.version{
+position:fixed;
+bottom:5px;
+right:10px;
+font-size:12px;
+opacity:0.6;
+}
+
+/* layout */
+
 #game{
-    max-width:900px;
-    margin:auto;
-    background:#1c1c1c;
-    padding:25px;
-    border-radius:15px;
-    box-shadow:0 0 25px #000;
+
+width:95%;
+max-width:1400px;
+margin:auto;
+margin-top:20px;
+
+display:grid;
+grid-template-columns:300px 1fr 320px;
+grid-gap:20px;
+
 }
-h2{color:#c9a94f;}
-.stats{
-    background:#111;
-    padding:10px;
-    margin-bottom:15px;
-    border-radius:8px;
+
+/* painéis */
+
+.panel{
+background:#1b1a16;
+border:1px solid #3a3528;
+border-radius:8px;
+padding:15px;
 }
+
+/* título */
+
+h1{
+text-align:center;
+color:#c6a85a;
+margin-top:10px;
+}
+
+/* stats */
+
+.stat{
+margin-bottom:6px;
+}
+
+/* área 3D */
+
+#world{
+
+height:420px;
+background:linear-gradient(#2a261c,#15130e);
+border-radius:10px;
+position:relative;
+overflow:hidden;
+}
+
+/* chão */
+
+.ground{
+position:absolute;
+bottom:0;
+width:100%;
+height:120px;
+background:#3a3426;
+transform:perspective(400px) rotateX(50deg);
+}
+
+/* personagem */
+
+.player{
+width:60px;
+height:100px;
+background:#c6a85a;
+position:absolute;
+bottom:80px;
+left:48%;
+border-radius:5px;
+}
+
+/* inimigo */
+
+.enemy{
+width:60px;
+height:100px;
+background:#7a1f1f;
+position:absolute;
+bottom:80px;
+right:20%;
+border-radius:5px;
+}
+
+/* botões */
+
 button{
-    margin:6px;
-    padding:10px 14px;
-    background:#2e2e2e;
-    color:#fff;
-    border:none;
-    cursor:pointer;
-    border-radius:6px;
+
+width:100%;
+padding:10px;
+margin-top:6px;
+
+background:#2c2920;
+color:#e6dcc6;
+border:1px solid #4a4432;
+
+cursor:pointer;
 }
+
 button:hover{
-    background:#444;
+background:#3c372a;
 }
-.log{
-    background:#000;
-    padding:10px;
-    height:180px;
-    overflow-y:auto;
-    margin-top:10px;
-    font-size:14px;
+
+/* história */
+
+#story{
+min-height:120px;
+line-height:1.5em;
 }
-.section{
-    margin-bottom:15px;
+
+/* log */
+
+#log{
+
+height:300px;
+overflow:auto;
+
+background:#0b0b0b;
+padding:10px;
+
+font-size:14px;
+border-radius:6px;
+
 }
+
 </style>
 </head>
 
 <body>
 
-<div id="game">
-<h2>🌌 Crônicas do Isekai Procedural</h2>
+<h1>Crônicas de Eldoria</h1>
 
-<div class="stats">
-❤️ HP: <span id="hp"></span> |
-⚔ Força: <span id="str"></span> |
-🧠 Mente: <span id="mind"></span> |
-💰 Ouro: <span id="gold"></span> |
-⭐ Reputação Vila: <span id="repVillage"></span> |
-🏰 Reputação Nobreza: <span id="repNoble"></span> |
-🌑 Corrupção: <span id="corruption"></span>
+<div id="game">
+
+<!-- personagem -->
+
+<div class="panel">
+
+<h3>Personagem</h3>
+
+<div class="stat">HP: <span id="hp"></span></div>
+<div class="stat">Força: <span id="str"></span></div>
+<div class="stat">Mente: <span id="mind"></span></div>
+<div class="stat">Ouro: <span id="gold"></span></div>
+
+<hr>
+
+<div class="stat">Reputação Vila: <span id="repVillage"></span></div>
+<div class="stat">Reputação Nobre: <span id="repNoble"></span></div>
+<div class="stat">Corrupção: <span id="corruption"></span></div>
+
+<hr>
+
+<div>Origem: <span id="origin"></span></div>
+<div>Poder: <span id="ability"></span></div>
+
 </div>
 
-<div class="section" id="story"></div>
-<div class="section" id="choices"></div>
-<div class="log" id="log"></div>
+<!-- mundo -->
+
+<div class="panel">
+
+<div id="world">
+
+<div class="ground"></div>
+
+<div class="player"></div>
+
+<div id="enemyBox"></div>
+
+</div>
+
+<div id="story"></div>
+
+<div id="choices"></div>
+
+</div>
+
+<!-- log -->
+
+<div class="panel">
+
+<h3>Crônicas</h3>
+
+<div id="log"></div>
+
+</div>
+
+</div>
+
+<div class="version">
+version 1.0
 </div>
 
 <script>
-let player = {
-    hp: 100,
-    str: 0,
-    mind: 0,
-    gold: 20,
-    repVillage: 0,
-    repNoble: 0,
-    corruption: 0,
-    ability: "",
-    origin: ""
-};
 
-function randomRange(min,max){
-    return Math.floor(Math.random()*(max-min+1))+min;
+let player={
+
+hp:100,
+str:5,
+mind:5,
+gold:20,
+
+repVillage:0,
+repNoble:0,
+
+corruption:0,
+
+origin:"",
+ability:""
+
 }
 
-function log(text){
-    let box=document.getElementById("log");
-    box.innerHTML+=text+"<br>";
-    box.scrollTop=box.scrollHeight;
+function saveGame(){
+
+localStorage.setItem("isekaiSave",JSON.stringify(player))
+
+}
+
+function loadGame(){
+
+let save=localStorage.getItem("isekaiSave")
+
+if(save){
+player=JSON.parse(save)
+}
+
+}
+
+function log(t){
+
+let box=document.getElementById("log")
+box.innerHTML+=t+"<br>"
+box.scrollTop=box.scrollHeight
+
 }
 
 function update(){
-    document.getElementById("hp").innerText=player.hp;
-    document.getElementById("str").innerText=player.str;
-    document.getElementById("mind").innerText=player.mind;
-    document.getElementById("gold").innerText=player.gold;
-    document.getElementById("repVillage").innerText=player.repVillage;
-    document.getElementById("repNoble").innerText=player.repNoble;
-    document.getElementById("corruption").innerText=player.corruption;
+
+document.getElementById("hp").innerText=player.hp
+document.getElementById("str").innerText=player.str
+document.getElementById("mind").innerText=player.mind
+document.getElementById("gold").innerText=player.gold
+
+document.getElementById("repVillage").innerText=player.repVillage
+document.getElementById("repNoble").innerText=player.repNoble
+document.getElementById("corruption").innerText=player.corruption
+
+document.getElementById("origin").innerText=player.origin
+document.getElementById("ability").innerText=player.ability
+
+saveGame()
+
 }
 
 function clearChoices(){
-    document.getElementById("choices").innerHTML="";
+
+document.getElementById("choices").innerHTML=""
+
 }
 
 function addChoice(text,action){
-    let btn=document.createElement("button");
-    btn.innerText=text;
-    btn.onclick=action;
-    document.getElementById("choices").appendChild(btn);
+
+let btn=document.createElement("button")
+btn.innerText=text
+btn.onclick=action
+
+document.getElementById("choices").appendChild(btn)
+
 }
 
+/* geração */
+
 function generateOrigin(){
-    let origins=[
-        "Filho de Ferreiro",
-        "Nobre Arruinado",
-        "Mercenário Desertor",
-        "Invocação Falha",
-        "Bastardo da Corte",
-        "Camponês Endividado"
-    ];
-    player.origin=origins[randomRange(0,origins.length-1)];
-    player.str=randomRange(4,8);
-    player.mind=randomRange(4,8);
+
+let list=[
+
+"Filho de Ferreiro",
+"Nobre Caído",
+"Mercenário",
+"Invocação Falha",
+"Camponês Endividado"
+
+]
+
+player.origin=list[Math.floor(Math.random()*list.length)]
+
 }
 
 function generateAbility(){
-    let abilities=[
-        "Roubar Vida (cura ao causar dano)",
-        "Contrato Forçado (chance de controlar NPC)",
-        "Olhar do Futuro (evita falha uma vez)",
-        "Fúria Sombria (+dano, +corrupção)"
-    ];
-    player.ability=abilities[randomRange(0,abilities.length-1)];
+
+let list=[
+
+"Drenar Vida",
+"Olhos do Futuro",
+"Contrato Sombrio",
+"Fúria Abissal"
+
+]
+
+player.ability=list[Math.floor(Math.random()*list.length)]
+
 }
 
-function start(){
-    generateOrigin();
-    generateAbility();
-    update();
-    log("Origem: "+player.origin);
-    log("Habilidade: "+player.ability);
-    mainMenu();
-}
+/* MENU */
 
 function mainMenu(){
-    clearChoices();
-    document.getElementById("story").innerText=
-    "Você está na região fronteiriça de Eldoria. O que deseja fazer?";
 
-    addChoice("Explorar Floresta",forest);
-    addChoice("Ir à Cidade",city);
-    addChoice("Aceitar Missão da Vila",villageQuest);
-    addChoice("Praticar Habilidade",useAbility);
+clearChoices()
+
+document.getElementById("enemyBox").innerHTML=""
+
+document.getElementById("story").innerText=
+"O que você deseja fazer?"
+
+addChoice("Explorar floresta",forest)
+
+addChoice("Ir à cidade",city)
+
+addChoice("Missão da vila",quest)
+
+addChoice("Treinar",train)
+
 }
+
+/* FLORESTA */
 
 function forest(){
-    clearChoices();
-    let roll=Math.random();
 
-    if(roll<0.4){
-        document.getElementById("story").innerText="Um Lobo Selvagem ataca!";
-        combat("Lobo",40,6);
-    }else if(roll<0.7){
-        document.getElementById("story").innerText="Você encontra um mercador suspeito.";
-        addChoice("Roubar",function(){
-            player.gold+=30;
-            player.corruption+=10;
-            log("Você roubou o mercador.");
-            update();
-            mainMenu();
-        });
-        addChoice("Negociar",function(){
-            player.gold-=5;
-            player.repVillage+=2;
-            log("Negociação honesta.");
-            update();
-            mainMenu();
-        });
-    }else{
-        document.getElementById("story").innerText="Você encontra ruínas antigas.";
-        player.mind+=1;
-        log("Conhecimento adquirido.");
-        update();
-        mainMenu();
-    }
+clearChoices()
+
+let r=Math.random()
+
+if(r<0.5){
+
+spawnEnemy()
+
+combat("Lobo",40,7)
+
+}else{
+
+player.gold+=10
+log("Você encontrou moedas antigas.")
+
+update()
+
+mainMenu()
+
 }
+
+}
+
+/* inimigo visual */
+
+function spawnEnemy(){
+
+document.getElementById("enemyBox").innerHTML=
+'<div class="enemy"></div>'
+
+}
+
+/* combate */
 
 function combat(name,hp,dmg){
-    clearChoices();
-    addChoice("Atacar",function(){
-        let damage=player.str+randomRange(1,6);
-        hp-=damage;
-        log("Você causa "+damage+" de dano.");
 
-        if(hp<=0){
-            player.gold+=20;
-            player.repVillage+=1;
-            log(name+" derrotado!");
-            update();
-            mainMenu();
-        }else{
-            player.hp-=dmg;
-            log(name+" causa "+dmg+" de dano.");
-            update();
-            checkDeath();
-            combat(name,hp,dmg);
-        }
-    });
+clearChoices()
 
-    addChoice("Usar Habilidade",function(){
-        if(player.ability=="Fúria Sombria (+dano, +corrupção)"){
-            let damage=player.str+15;
-            hp-=damage;
-            player.corruption+=5;
-            log("Fúria ativa! "+damage+" dano.");
-        }else if(player.ability=="Roubar Vida (cura ao causar dano)"){
-            let damage=player.str+5;
-            hp-=damage;
-            player.hp+=damage/2;
-            log("Vida drenada.");
-        }
-        update();
-        if(hp<=0){
-            log(name+" caiu.");
-            mainMenu();
-        }else{
-            player.hp-=dmg;
-            update();
-            checkDeath();
-            combat(name,hp,dmg);
-        }
-    });
+document.getElementById("story").innerText=
+name+" aparece!"
 
-    addChoice("Fugir",mainMenu);
+addChoice("Atacar",function(){
+
+let damage=player.str+Math.floor(Math.random()*6)
+
+hp-=damage
+
+log("Você causa "+damage)
+
+if(hp<=0){
+
+player.gold+=20
+
+log(name+" derrotado!")
+
+update()
+
+mainMenu()
+
+}else{
+
+player.hp-=dmg
+
+log(name+" causa "+dmg)
+
+update()
+
+checkDeath()
+
+combat(name,hp,dmg)
+
 }
+
+})
+
+addChoice("Fugir",mainMenu)
+
+}
+
+/* cidade */
 
 function city(){
-    clearChoices();
-    document.getElementById("story").innerText="Na cidade há intrigas políticas.";
-    addChoice("Apoiar Nobre",function(){
-        player.repNoble+=3;
-        player.gold+=15;
-        log("Você ajudou um nobre.");
-        update();
-        mainMenu();
-    });
-    addChoice("Espionar",function(){
-        player.mind+=1;
-        player.corruption+=3;
-        log("Segredos adquiridos.");
-        update();
-        mainMenu();
-    });
+
+clearChoices()
+
+document.getElementById("story").innerText=
+"Intrigas políticas circulam na cidade."
+
+addChoice("Ajudar nobre",function(){
+
+player.repNoble+=2
+player.gold+=15
+
+log("Um nobre paga por sua ajuda.")
+
+update()
+
+mainMenu()
+
+})
+
+addChoice("Espionar",function(){
+
+player.mind+=1
+player.corruption+=2
+
+log("Segredos descobertos.")
+
+update()
+
+mainMenu()
+
+})
+
 }
 
-function villageQuest(){
-    clearChoices();
-    document.getElementById("story").innerText="A vila pede ajuda contra bandidos.";
-    addChoice("Ajudar",function(){
-        combat("Bandido",50,8);
-    });
-    addChoice("Cobrar ouro antes",function(){
-        player.gold+=10;
-        player.repVillage-=2;
-        log("Você exigiu pagamento.");
-        update();
-        mainMenu();
-    });
+/* missão */
+
+function quest(){
+
+spawnEnemy()
+
+combat("Bandido",50,8)
+
 }
 
-function useAbility(){
-    clearChoices();
-    player.mind+=1;
-    player.corruption+=2;
-    log("Você sente sua habilidade crescer... mas algo escurece dentro de você.");
-    update();
-    mainMenu();
+/* treino */
+
+function train(){
+
+player.str+=1
+player.mind+=1
+
+log("Treinamento melhora seus atributos.")
+
+update()
+
+mainMenu()
+
 }
 
 function checkDeath(){
-    if(player.hp<=0){
-        alert("Você morreu. O mundo continua sem você.");
-        location.reload();
-    }
+
+if(player.hp<=0){
+
+alert("Você morreu.")
+
+localStorage.removeItem("isekaiSave")
+
+location.reload()
+
 }
 
-start();
+}
+
+/* iniciar */
+
+function start(){
+
+loadGame()
+
+if(!player.origin){
+
+generateOrigin()
+generateAbility()
+
+}
+
+update()
+
+log("Bem vindo a Eldoria.")
+
+mainMenu()
+
+}
+
+start()
+
 </script>
 
 </body>
