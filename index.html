@@ -5,337 +5,385 @@
 <title>Isekai Life</title>
 
 <style>
+
 body{
-background:#1b1b1b;
-color:white;
-font-family:Arial;
-text-align:center;
+background:#111;
+color:#eaeaea;
+font-family:system-ui;
+display:flex;
+justify-content:center;
+padding:40px;
 }
 
-.container{
-width:600px;
-margin:auto;
-background:#2b2b2b;
+#game{
+width:700px;
+}
+
+.card{
+background:#1b1b1b;
 padding:20px;
-border-radius:10px;
+border-radius:8px;
+margin-bottom:15px;
+}
+
+h1{
+font-weight:300;
 }
 
 button{
-padding:10px;
-margin:5px;
+background:#2b2b2b;
 border:none;
-border-radius:5px;
-background:#3c8cff;
 color:white;
+padding:10px 15px;
+margin:4px;
+border-radius:6px;
 cursor:pointer;
 }
 
 button:hover{
-background:#2a6adf;
+background:#3b3b3b;
 }
 
 .bar{
-height:15px;
-background:#444;
-margin:5px;
-border-radius:5px;
+height:8px;
+background:#333;
+margin-bottom:6px;
+border-radius:4px;
 }
 
 .fill{
-height:15px;
-background:#3cff8f;
-border-radius:5px;
+height:8px;
+background:#6be675;
+border-radius:4px;
 }
 
-.event{
-background:#333;
-padding:10px;
-margin-top:10px;
-border-radius:5px;
+.stat{
+font-size:12px;
+opacity:0.7;
 }
 
-.version{
-position:fixed;
-bottom:5px;
-right:10px;
-font-size:10px;
-opacity:0.5;
+.small{
+font-size:12px;
+opacity:0.6;
 }
+
 </style>
 </head>
 
 <body>
 
-<div class="container">
-
-<h1>Isekai Life</h1>
-
 <div id="game"></div>
-
-</div>
-
-<div class="version">v1.0</div>
 
 <script>
 
 let player = {
-nome:"",
-idade:0,
-classe:"",
-forca:0,
-inteligencia:0,
-carisma:0,
-sorte:0,
-mana:0,
-ouro:10,
-inventario:[],
-relacoes:{
-pai:50,
-mae:50
-}
+
+name:"",
+
+age:0,
+
+class:"",
+
+gold:10,
+
+stats:{
+strength:5,
+intelligence:5,
+charisma:5,
+luck:5,
+mana:3
+},
+
+inventory:[],
+
+memoryLevel:0
+
 }
 
-function startGame(){
+const items = [
+
+{name:"Espada velha",type:"weapon",power:2},
+{name:"Adaga",type:"weapon",power:1},
+{name:"Livro antigo",type:"knowledge",power:2},
+{name:"Anel estranho",type:"artifact",power:3},
+{name:"Poção misteriosa",type:"potion",power:2}
+
+]
+
+function rand(min,max){
+return Math.floor(Math.random()*(max-min+1))+min
+}
+
+function start(){
+
+player.name="Arion"
+
+player.age=0
+
+player.class=randomClass()
+
+player.stats.strength=rand(3,7)
+player.stats.intelligence=rand(3,7)
+player.stats.charisma=rand(3,7)
+player.stats.luck=rand(3,7)
+player.stats.mana=rand(1,5)
+
+render()
+
+event("Você reencarnou no mundo de Elyndar.")
+
+}
+
+function randomClass(){
+
+let c=[
+"Camponês",
+"Filho de ferreiro",
+"Filho de mercador",
+"Nobre menor",
+"Órfão"
+]
+
+return c[rand(0,c.length-1)]
+
+}
+
+function render(){
 
 document.getElementById("game").innerHTML=`
 
-<h2>Você morreu no mundo moderno...</h2>
+<div class="card">
 
-<p>Uma entidade oferece reencarnação em Elyndar.</p>
+<h1>Isekai Life</h1>
 
-<button onclick="reencarnar()">Reencarnar</button>
-
-`
-}
-
-function reencarnar(){
-
-let classes=["Camponês","Filho de Ferreiro","Filho de Mercador","Nobre Menor","Órfão"]
-
-player.classe=classes[Math.floor(Math.random()*classes.length)]
-
-player.idade=0
-
-player.forca=rand(2,6)
-player.inteligencia=rand(2,6)
-player.carisma=rand(2,6)
-player.sorte=rand(2,6)
-player.mana=rand(1,5)
-
-player.nome="Arion"
-
-mostrarStatus()
-
-}
-
-function mostrarStatus(){
-
-document.getElementById("game").innerHTML=`
-
-<h2>${player.nome}</h2>
-
-<p>Idade: ${player.idade}</p>
-<p>Classe: ${player.classe}</p>
-
-<p>Ouro: ${player.ouro}</p>
-
-<h3>Atributos</h3>
-
-Força
-<div class="bar"><div class="fill" style="width:${player.forca*10}%"></div></div>
-
-Inteligência
-<div class="bar"><div class="fill" style="width:${player.inteligencia*10}%"></div></div>
-
-Carisma
-<div class="bar"><div class="fill" style="width:${player.carisma*10}%"></div></div>
-
-Sorte
-<div class="bar"><div class="fill" style="width:${player.sorte*10}%"></div></div>
-
-Mana
-<div class="bar"><div class="fill" style="width:${player.mana*10}%"></div></div>
+<div class="small">
+${player.name} • idade ${player.age} • ${player.class}
+</div>
 
 <br>
 
-<button onclick="avancarIdade()">Avançar 1 ano</button>
-<button onclick="verInventario()">Inventário</button>
-<button onclick="verRelacoes()">Relações</button>
+<div class="stat">Força</div>
+<div class="bar"><div class="fill" style="width:${player.stats.strength*10}%"></div></div>
 
-<div id="eventos"></div>
+<div class="stat">Inteligência</div>
+<div class="bar"><div class="fill" style="width:${player.stats.intelligence*10}%"></div></div>
 
-`
+<div class="stat">Carisma</div>
+<div class="bar"><div class="fill" style="width:${player.stats.charisma*10}%"></div></div>
 
-}
+<div class="stat">Sorte</div>
+<div class="bar"><div class="fill" style="width:${player.stats.luck*10}%"></div></div>
 
-function avancarIdade(){
+<div class="stat">Mana</div>
+<div class="bar"><div class="fill" style="width:${player.stats.mana*10}%"></div></div>
 
-player.idade++
+<br>
 
-eventoAleatorio()
-
-}
-
-function eventoAleatorio(){
-
-let eventos=[eventoEspada,eventoMemoria,eventoOuro,eventoTreino]
-
-let e = eventos[Math.floor(Math.random()*eventos.length)]
-
-e()
-
-}
-
-function eventoEspada(){
-
-document.getElementById("eventos").innerHTML=`
-
-<div class="event">
-
-Você encontrou uma espada velha no celeiro.
-
-<br><br>
-
-<button onclick="pegarEspada()">Ficar com ela</button>
-
-<button onclick="venderEspada()">Vender por 5 ouro</button>
+Ouro: ${player.gold}
 
 </div>
 
-`
+<div class="card">
 
-}
-
-function pegarEspada(){
-
-player.inventario.push("Espada velha")
-
-player.forca+=1
-
-mostrarStatus()
-
-}
-
-function venderEspada(){
-
-player.ouro+=5
-
-mostrarStatus()
-
-}
-
-function eventoMemoria(){
-
-document.getElementById("eventos").innerHTML=`
-
-<div class="event">
-
-Uma memória do mundo moderno surge...
-
-Você lembra de algo sobre tecnologia.
-
-<br><br>
-
-<button onclick="ideiaPolvora()">Tentar criar pólvora</button>
-
-<button onclick="ignorar()">Ignorar</button>
+<button onclick="nextYear()">Avançar ano</button>
+<button onclick="showInventory()">Inventário</button>
+<button onclick="training()">Treinar</button>
 
 </div>
 
+<div class="card" id="event"></div>
+
 `
 
 }
 
-function ideiaPolvora(){
+function event(text,choices=[]){
 
-if(player.inteligencia>4){
+let html=`<p>${text}</p>`
 
-player.ouro+=20
+choices.forEach(c=>{
+html+=`<button onclick="${c.action}">${c.text}</button>`
+})
 
-alert("Você criou algo útil e vendeu a ideia!")
+document.getElementById("event").innerHTML=html
+
+}
+
+function nextYear(){
+
+player.age++
+
+proceduralEvent()
+
+render()
+
+}
+
+function proceduralEvent(){
+
+let score =
+player.stats.intelligence +
+player.stats.luck +
+player.memoryLevel
+
+let roll=rand(1,100)
+
+if(roll<25){
+
+findItem()
+
+}
+
+else if(roll<45){
+
+goldEvent()
+
+}
+
+else if(roll<65){
+
+isekaiMemory()
+
+}
+
+else if(roll<85){
+
+statEvent()
+
+}
+
+else{
+
+nothingEvent()
+
+}
+
+}
+
+function findItem(){
+
+let item=items[rand(0,items.length-1)]
+
+player.inventory.push(item)
+
+event(
+
+"Você encontrou: "+item.name,
+
+[
+{text:"Guardar",action:"render()"},
+{text:"Vender",action:`sellItem("${item.name}")`}
+]
+
+)
+
+}
+
+function sellItem(name){
+
+player.gold+=rand(5,15)
+
+player.inventory=player.inventory.filter(i=>i.name!=name)
+
+render()
+
+}
+
+function goldEvent(){
+
+let g=rand(5,20)
+
+player.gold+=g
+
+event("Você ganhou "+g+" moedas.")
+
+}
+
+function statEvent(){
+
+let stats=["strength","intelligence","charisma","luck"]
+
+let s=stats[rand(0,stats.length-1)]
+
+player.stats[s]+=1
+
+event("Você melhorou sua habilidade de "+s)
+
+}
+
+function isekaiMemory(){
+
+if(rand(1,100)<50){
+
+player.memoryLevel++
+
+player.stats.intelligence++
+
+event(
+
+"Uma memória do mundo moderno retorna. Você tem uma nova ideia."
+
+)
 
 }else{
 
-alert("Você falhou miseravelmente.")
+event("Você quase lembra algo do outro mundo... mas desaparece.")
 
 }
 
-mostrarStatus()
+}
+
+function nothingEvent(){
+
+event("Um ano tranquilo se passa.")
 
 }
 
-function ignorar(){
+function training(){
 
-mostrarStatus()
+event(
 
-}
+"O que deseja treinar?",
 
-function eventoOuro(){
+[
+{text:"Força",action:"trainStat('strength')"},
+{text:"Inteligência",action:"trainStat('intelligence')"},
+{text:"Mana",action:"trainStat('mana')"}
+]
 
-let valor=rand(3,10)
-
-player.ouro+=valor
-
-alert("Você encontrou "+valor+" moedas!")
-
-mostrarStatus()
+)
 
 }
 
-function eventoTreino(){
+function trainStat(s){
 
-document.getElementById("eventos").innerHTML=`
+player.stats[s]+=1
 
-<div class="event">
-
-Você quer treinar algo.
-
-<br><br>
-
-<button onclick="treinarForca()">Treinar força</button>
-<button onclick="estudar()">Estudar</button>
-
-</div>
-
-`
+render()
 
 }
 
-function treinarForca(){
+function showInventory(){
 
-player.forca++
+let text="Inventário:<br><br>"
 
-mostrarStatus()
+if(player.inventory.length==0){
 
-}
+text+="vazio"
 
-function estudar(){
+}else{
 
-player.inteligencia++
-
-mostrarStatus()
-
-}
-
-function verInventario(){
-
-alert("Inventário: "+player.inventario.join(", "))
+player.inventory.forEach(i=>{
+text+=i.name+"<br>"
+})
 
 }
 
-function verRelacoes(){
-
-alert("Pai: "+player.relacoes.pai+" | Mãe: "+player.relacoes.mae)
+event(text)
 
 }
 
-function rand(min,max){
-
-return Math.floor(Math.random()*(max-min+1))+min
-
-}
-
-startGame()
+start()
 
 </script>
 
