@@ -3,47 +3,39 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Isekai Life — Chat Narrativo</title>
+<title>Isekai Life — v5.0 (Ultra)</title>
 <style>
-  :root{
-    --accent:#67ff8d;
-    --bg:#0f1113;
-    --card:rgba(18,20,22,0.88);
-    --muted:#cbd5e1;
-    --danger:#ff6b6b;
-  }
-  html,body{height:100%;margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial;background:
-    linear-gradient(180deg, rgba(0,0,0,0.6), rgba(0,0,0,0.8)),
-    url('https://images.unsplash.com/photo-1503264116251-35a269479413?q=80&w=1600&auto=format&fit=crop') center/cover fixed;
-    color:#e6eef3}
-  .wrap{max-width:1100px;margin:28px auto;padding:8px;display:grid;grid-template-columns:300px 1fr 260px;gap:16px}
-  .card{background:var(--card);padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.03);box-shadow:0 8px 30px rgba(0,0,0,0.45)}
-  h1{margin:0 0 8px 0;font-weight:600}
+  :root{--accent:#67ff8d;--bg:#070809;--card:rgba(18,20,22,0.90);--muted:#cbd5e1;--danger:#ff6b6b}
+  html,body{height:100%;margin:0;font-family:Inter,system-ui,Roboto,Arial;background:
+    linear-gradient(180deg, rgba(0,0,0,0.6), rgba(0,0,0,0.85)),
+    url('https://images.unsplash.com/photo-1503264116251-35a269479413?q=80&w=1600&auto=format&fit=crop') center/cover fixed;color:#e6eef3}
+  .wrap{max-width:1200px;margin:20px auto;display:grid;grid-template-columns:320px 1fr 320px;gap:16px;padding:12px}
+  .card{background:var(--card);padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.03);box-shadow:0 10px 30px rgba(0,0,0,0.5)}
+  h1{margin:0 0 6px 0;font-weight:700}
   .muted{font-size:13px;color:rgba(230,238,243,0.85)}
-  .stat{margin:10px 0}
+  .stat{margin:8px 0}
   .bar{height:10px;background:rgba(255,255,255,0.06);border-radius:999px;overflow:hidden}
   .fill{height:100%;background:linear-gradient(90deg,var(--accent),#2fe4b8);width:40%}
   .buttons{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
-  button{background:#222;border:1px solid rgba(255,255,255,0.04);color:var(--muted);padding:8px 10px;border-radius:8px;cursor:pointer;font-weight:600}
+  button{background:#222;border:1px solid rgba(255,255,255,0.04);color:var(--muted);padding:8px 10px;border-radius:8px;cursor:pointer;font-weight:700}
   button.primary{background:linear-gradient(180deg,#2b2b2b,#343434);color:white}
-  #story{height:66vh;overflow:auto;padding:12px;background:linear-gradient(180deg,rgba(0,0,0,0.12),rgba(0,0,0,0.02));border-radius:8px}
+  #story{height:68vh;overflow:auto;padding:12px;background:linear-gradient(180deg,rgba(0,0,0,0.12),rgba(0,0,0,0.03));border-radius:8px;border:1px solid rgba(255,255,255,0.02)}
   .msg{margin-bottom:12px}
   .who{font-weight:700;margin-bottom:6px}
   .text{white-space:pre-wrap;line-height:1.45}
   .inputRow{display:flex;gap:8px;margin-top:12px}
   input[type="text"]{flex:1;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:rgba(255,255,255,0.02);color:inherit}
   .choice{display:inline-block;background:rgba(255,255,255,0.04);padding:6px 10px;border-radius:999px;margin:6px 6px 0 0;cursor:pointer;font-size:13px}
-  #version{position:fixed;right:18px;bottom:14px;color:rgba(255,255,255,0.55);font-size:12px}
-  .spinner{display:inline-block;width:18px;height:18px;border-radius:50%;border:2px solid rgba(255,255,255,0.12);border-top-color:var(--accent);animation:spin 1s linear infinite;vertical-align:middle}
+  .spinner{display:inline-block;width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,0.12);border-top-color:var(--accent);animation:spin 1s linear infinite;vertical-align:middle;margin-left:8px}
   @keyframes spin{to{transform:rotate(360deg)}}
-  @media (max-width:980px){ .wrap{grid-template-columns:1fr; padding:12px} .card{margin-bottom:12px} #story{height:50vh} }
+  @media (max-width:1000px){ .wrap{grid-template-columns:1fr; padding:10px} .card{margin-bottom:12px} #story{height:55vh} }
 </style>
 </head>
 <body>
 <div class="wrap">
   <!-- LEFT -->
   <div class="card" aria-label="status">
-    <h1>Isekai Life</h1>
+    <h1>Isekai Life <small style="font-weight:400">v5.0</small></h1>
     <div class="muted">Personagem: <strong id="playerName">Garuk</strong></div>
     <div class="stat">Idade: <strong id="age">10</strong></div>
     <div class="stat">Vida: <strong id="hp">100</strong></div>
@@ -84,11 +76,11 @@
 
     <div style="margin-top:12px">
       <div class="inputRow">
-        <input id="playerInput" type="text" placeholder='Ex: Garuk: "Quem é você?"' maxlength="700" />
+        <input id="playerInput" type="text" placeholder='Ex: Garuk: "Quem é você?" ou "Atacar Leo"' maxlength="700" />
         <button id="sendBtn" class="primary">Enviar</button>
         <button id="btnExamples">Ex</button>
       </div>
-      <div class="muted" style="margin-top:8px">Use linguagem natural — descreva ações ou falas.</div>
+      <div class="muted" style="margin-top:8px">Use linguagem natural — fale, aja ou descreva.</div>
     </div>
   </div>
 
@@ -106,71 +98,93 @@
     <label><input type="checkbox" id="forceFallback"> Forçar fallback local (sem IA)</label>
 
     <hr style="opacity:0.06;margin:12px 0">
-    <div class="muted">Versão</div><div style="margin-top:6px"><strong>Isekai Life v4.0</strong></div>
+    <div class="muted">Versão</div><div style="margin-top:6px"><strong>Isekai Life v5.0 (Ultra)</strong></div>
   </div>
 </div>
 
-<div id="version">Isekai Life v4.0</div>
+<div id="version">Isekai Life v5.0</div>
 
 <script>
 /* =========================
-   CONFIG / Estado inicial
+   CONFIG + ESTADO INICIAL
    ========================= */
 const API_PATH = "/api/narrate";
 let sessionId = localStorage.getItem("isekai_session") || ("s_"+Math.random().toString(36).slice(2,10));
 localStorage.setItem("isekai_session", sessionId);
 
-/* Estado do jogo */
 const state = {
   player: { name:"Garuk", age:10, hp:100, gold:45, reputation:0, stats:{ strength:4, intelligence:6, charisma:3, luck:5, mana:2 }, inventory:[{name:"Espada velha",power:3}] },
   location: "Floresta de Elyndar",
-  npcs: [{name:"Leo", role:"caçador", attitude:"desconfiado"}],
-  story: [] // array {who,text,time}
+  npcs: [{name:"Leo", role:"caçador", attitude:"desconfiado", memory:[]}],
+  world: { towns:[], quests:[] },
+  story: []
 };
 
 /* =========================
-   DIALOGUE MANAGER
-   - centraliza memória, personalidade NPCs,
-   - converte histórico para prompt curto,
-   - fornece fallback melhorado.
+   DIALOGUE + WORLD MANAGER
+   - interpreta intenção
+   - mantém memória NPC
+   - gera quests e eventos procedurais
    ========================= */
-class DialogueManager {
-  constructor(state){
-    this.state = state;
-    // personas simples; podem evoluir em servidor
-    this.personas = { Leo: { role:"caçador", tone:"desconfiado", memory:[] } };
+class UltraManager {
+  constructor(state){ this.state = state; this.personas = { Leo: { role:"caçador", trust:0, hostility:0, memory:[] } }; }
+  compactContext(n=14){
+    const recent = this.state.story.slice(-n).map(s=>`${s.who}: ${s.text}`);
+    return { recent, player: { name:this.state.player.name, hp:this.state.player.hp }, location: this.state.location, npcs: this.state.npcs.map(n=>({name:n.name, role:n.role})) };
   }
-
-  // compact history (últimos n eventos) para enviar ao modelo
-  compactContext(n = 12){
-    const recent = this.state.story.slice(-n).map(s => `${s.who}: ${s.text}`);
-    return { recent, player: { name:this.state.player.name, hp:this.state.player.hp }, location: this.state.location, npcs: this.state.npcs };
+  // interpretar intenção básica (padrões mais ricos)
+  interpretarIntencao(text){
+    const t = (text||"").toLowerCase();
+    if(/^(oi|ola|olá|saud|salve)/.test(t)) return "cumprimento";
+    if(/\b(quem|nome)\b/.test(t)) return "pergunta_nome";
+    if(/\b(seguir|vamos|ir|siga)\b/.test(t)) return "seguir";
+    if(/\b(investigar|ver|olhar|examinar)\b/.test(t)) return "investigar";
+    if(/\b(n[aã]o|recusar|nego)\b/.test(t)) return "recusar";
+    if(/\b(atacar|matar|lutar|esfaquear|roubar)\b/.test(t)) return "ataque";
+    if(/\b(ajudar|trabalhar|parceria)\b/.test(t)) return "parceria";
+    if(/\b(vender|comprar|preco|preço)\b/.test(t)) return "comercio";
+    return "neutro";
   }
-
-  // local fallback generator mais "conversacional"
-  localFallback(action){
-    const a = (action||"").toLowerCase();
-    if(a.includes("quem") || a.includes("quem é")) {
-      return { narrative: 'Leo ergue a sobrancelha. "Sou Leo, caçador desta floresta. O que busca?"', choices:[{text:"Pedir ajuda"},{text:"Atacar"}], updates:{} };
+  localNarrative(action){
+    // fallback mais rico: usa intenção + estado do NPC para variar respostas
+    const intent = this.interpretarIntencao(action);
+    const leo = this.personas.Leo;
+    if(intent === "cumprimento"){
+      if(!leo.memory.includes("conhece")){
+        leo.memory.push("conhece"); return { narrative: 'Leo sorri. "Saudações. Sou Leo, cuido das trilhas por aqui."', choices:[{text:"Pedir trabalho"},{text:"Perguntar sobre ruínas"}], updates:{} };
+      }
+      return { narrative: 'Leo acena: "Já nos conhecemos, viajante."', choices:[{text:"Perguntar sobre ruínas"},{text:"Seguir em frente"}], updates:{} };
     }
-    if(/roubar|atacar|assaltar/.test(a)){
-      const dmg = Math.floor(Math.random()*18)+4;
-      return { narrative:`Leo reage rápido. Você perde ${dmg} HP no confronto.`, choices:[{text:"Desculpar-se"},{text:"Fugir"}], updates:{hp:-dmg} };
-    }
-    // default
+    if(intent === "pergunta_nome"){ return { narrative: 'Leo: "Nome? Sou Leo, caçador."', choices:[{text:"Pedir ajuda"},{text:"Ir embora"}], updates:{} }; }
+    if(intent === "seguir"){ leo.trust = (leo.trust||0)+1; return { narrative: 'Leo sobe o caminho: "Siga-me, eu conheço atalhos para as ruínas."', choices:[{text:"Seguir Leo"},{text:"Ficar"}], updates:{} }; }
+    if(intent === "investigar"){ return { narrative: 'Leo examina as marcas: "Marcas de garras — reconheço este padrão, talvez lobos grandes."', choices:[{text:"Investigar marcas"},{text:"Montar armadilha"}], updates:{} }; }
+    if(intent === "recusar"){ return { narrative: 'Leo dá de ombros: "Como quiser. Não te perderei o sono."', choices:[{text:"Conversar"},{text:"Ir embora"}], updates:{} }; }
+    if(intent === "ataque"){ leo.hostility = (leo.hostility||0) + 2; const dmg = Math.floor(Math.random()*18)+6; return { narrative:`Confronto! Leo reage e você recebe ${dmg} de dano.`, choices:[{text:"Lutar"},{text:"Desculpar-se"}], updates:{hp:-dmg} }; }
+    if(intent === "parceria"){ leo.trust = (leo.trust||0)+2; return { narrative:'Leo considera: "Uma parceria? Podemos dividir lucros de caçadas."', choices:[{text:"Combinar divisão"},{text:"Recusar"}], updates:{} }; }
+    if(intent === "comercio"){ const gold = Math.floor(Math.random()*10)+5; return { narrative:`Você viu mercadores; vendeu algo por ${gold} moedas.`, choices:[{text:"Comprar equipamento"},{text:"Guardar ouro"}], updates:{gold:+gold} }; }
+    // neutro
     const templates = [
-      "Leo aponta para trilhas recentes: \"Algo passou por aqui. Devemos investigar?\"",
-      "Uma brisa fria passa. Leo comenta algo sobre ruínas ao norte; olhos brilhando com curiosidade.",
-      "Leo pega a lança: \"Se for seguir, fique atento às armadilhas.\""
+      "Leo observa o ambiente com olhos atentos.",
+      "O vento passa; Leo comenta sobre a lua cheia que atrai predadores.",
+      "Leo limpa a lâmina e espera sua próxima decisão."
     ];
-    return { narrative: templates[Math.floor(Math.random()*templates.length)], choices:[{text:"Investigar"},{text:"Seguir Leo"}], updates:{} };
+    return { narrative: templates[Math.floor(Math.random()*templates.length)], choices:[{text:"Perguntar sobre trilhas"},{text:"Continuar andando"}], updates:{} };
+  }
+  // gerar um quest simples (procedural)
+  generateQuest(){
+    const types = ["caçar lobos","explorar ruína","reparar moinho","encontrar erva rara"];
+    const t = types[Math.floor(Math.random()*types.length)];
+    const reward = Math.floor(Math.random()*40)+20;
+    const q = { id: "q_"+Date.now(), title:`${t}`, reward, status:"open" };
+    this.state.world.quests.push(q);
+    return q;
   }
 }
 
 /* =========================
-   UI helpers
+   HELPERS UI + segurança
    ========================= */
-function escapeHtml(s){ return (s+"").replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;'}[c])); }
+function escapeHtml(s){ return (s+"").replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[c])); }
 function appendMessage(who, text){
   state.story.push({ who, text, time: Date.now() });
   const s = document.getElementById("story");
@@ -182,11 +196,83 @@ function appendSystem(text){ appendMessage("Narrador", text); }
 function appendPlayer(text){ appendMessage(state.player.name, text); }
 function appendNPC(name, text){ appendMessage(name, text); }
 
+/* =========================
+   REDES: envio com timeout, bloqueio e fallback
+   ========================= */
+const UM = new UltraManager(state);
+
+function disableInputs(dis){
+  document.getElementById("sendBtn").disabled = dis;
+  document.getElementById("playerInput").disabled = dis;
+  const spinner = document.getElementById("sendSpinner");
+  if(dis && !spinner){
+    const sp = document.createElement("span"); sp.id="sendSpinner"; sp.className="spinner"; document.getElementById("sendBtn").appendChild(sp);
+  } else if(!dis && spinner){ spinner.remove(); }
+}
+
+async function sendAction(actionText){
+  if(!actionText) return;
+  appendPlayer(actionText);
+  const force = document.getElementById("forceFallback").checked;
+  disableInputs(true);
+  try{
+    if(force){ const out = UM.localNarrative(actionText); applyNarrative(out); return; }
+    const payload = { sessionId, action: actionText, context: UM.compactContext(12) };
+    const controller = new AbortController(); const timeoutId = setTimeout(()=>controller.abort(), 14000);
+    const res = await fetch(API_PATH, { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify(payload), signal: controller.signal });
+    clearTimeout(timeoutId);
+    if(!res.ok){ const txt = await res.text().catch(()=>""); console.warn("API error",res.status,txt); const out = UM.localNarrative(actionText); applyNarrative(out); return; }
+    const data = await res.json();
+    applyNarrative(data);
+  } catch(err){
+    console.warn("Network/API error -> fallback", err);
+    const out = UM.localNarrative(actionText); applyNarrative(out);
+  } finally {
+    disableInputs(false); renderAll(); try{ localStorage.setItem("isekai_history", JSON.stringify(state.story.slice(-60))); }catch(e){}
+  }
+}
+
+function applyNarrative(data){
+  if(typeof data === "string") data = { narrative: data };
+  if(data.narrative) appendSystem(data.narrative);
+  if(data.npc) appendNPC(data.npc.name, data.npc.text);
+  if(Array.isArray(data.choices) && data.choices.length){
+    const s = document.getElementById("story"); const block = document.createElement("div"); block.className = "msg";
+    block.innerHTML = `<div class="who">Escolhas</div>`; const inner = document.createElement("div"); inner.className="text";
+    data.choices.forEach(c=>{ const ch = document.createElement("span"); ch.className="choice"; ch.textContent = c.text; ch.onclick = ()=> sendAction(c.text); inner.appendChild(ch); });
+    block.appendChild(inner); s.appendChild(block); s.scrollTop = s.scrollHeight;
+  }
+  if(data.updates){
+    const u = data.updates;
+    if(typeof u.hp === "number") state.player.hp = Math.max(0, Math.min(300, state.player.hp + u.hp));
+    if(typeof u.gold === "number") state.player.gold += u.gold;
+    if(u.inventoryAdd && typeof u.inventoryAdd.name === "string") state.player.inventory.push(u.inventoryAdd);
+    if(u.statChanges && typeof u.statChanges === "object") Object.entries(u.statChanges).forEach(([k,v])=>{ if(typeof v === "number" && state.player.stats[k] !== undefined) state.player.stats[k] += v; });
+  }
+  renderAll();
+}
+
+/* =========================
+   UI events
+   ========================= */
+document.getElementById("sendBtn").onclick = ()=> { const txt = document.getElementById("playerInput").value.trim(); if(!txt) return; document.getElementById("playerInput").value=""; sendAction(txt); };
+document.getElementById("playerInput").addEventListener("keydown", e=>{ if(e.key==="Enter"){ e.preventDefault(); document.getElementById("sendBtn").click(); }});
+document.getElementById("btnYear").onclick = ()=> { state.player.age++; appendSystem(`Você avançou um ano. Agora ${state.player.age}.`); sendAction(`${state.player.name} viveu mais um ano. Descreva um acontecimento marcante.`); renderAll(); };
+document.getElementById("btnTrain").onclick = ()=> { const keys = Object.keys(state.player.stats); const k = keys[Math.floor(Math.random()*keys.length)]; state.player.stats[k] += 1; appendSystem(`Treinamento: +1 em ${k}.`); renderAll(); };
+document.getElementById("btnRest").onclick = ()=> { const heal = 10 + Math.floor(Math.random()*15); state.player.hp = Math.min(300, state.player.hp + heal); appendSystem(`Você descansou e recuperou ${heal} HP.`); renderAll(); };
+document.getElementById("btnExplore").onclick = ()=> { const found = Math.random()<0.6 ? {name:"Poção de cura",type:"heal",value:20} : {name:"Fragmento antigo",type:"artifact",power:2}; state.player.inventory.push(found); appendSystem(`Exploração: você encontrou ${found.name}.`); renderAll(); sendAction(`${state.player.name} explora ${state.location} e encontra ${found.name}. Crie 2 opções.`); };
+document.getElementById("btnExamples").onclick = ()=> { document.getElementById("playerInput").value = 'Garuk: "Quem é você?"'; };
+document.querySelectorAll(".choice").forEach(el=>el.addEventListener("click", ()=>{ const action = el.dataset.action; sendAction(action); }));
+
+/* =========================
+   RENDER helpers
+   ========================= */
+function renderAll(){ renderStats(); renderInventory(); }
 function renderStats(){
   document.getElementById("playerName").textContent = state.player.name;
   document.getElementById("age").textContent = state.player.age;
   document.getElementById("hp").textContent = state.player.hp;
-  document.getElementById("hpFill").style.width = Math.max(0,Math.min(100,state.player.hp)) + "%";
+  document.getElementById("hpFill").style.width = Math.max(0,Math.min(100,(state.player.hp/3))) + "%"; // scaled
   document.getElementById("gold").textContent = state.player.gold;
   document.getElementById("rep").textContent = state.player.reputation;
   document.getElementById("s_str").textContent = state.player.stats.strength*10; document.getElementById("fill_str").style.width = Math.min(100,state.player.stats.strength*10)+"%";
@@ -195,118 +281,15 @@ function renderStats(){
   document.getElementById("s_lck").textContent = state.player.stats.luck*10; document.getElementById("fill_lck").style.width = Math.min(100,state.player.stats.luck*10)+"%";
   document.getElementById("location").textContent = state.location;
 }
-function renderInventory(){
-  const n = document.getElementById("inventoryArea"); n.innerHTML = "";
-  if(state.player.inventory.length===0){ n.innerHTML = "<div class='muted'>vazio</div>"; return; }
-  state.player.inventory.forEach((it, idx)=>{
-    const div = document.createElement("div");
-    div.className = "muted";
-    const btn = `<button style="float:right" onclick="useItem(${idx})">usar</button>`;
-    div.innerHTML = `${escapeHtml(it.name)} ${it.power ? "• pwr:"+escapeHtml(it.power) : ""} ${btn}`;
-    n.appendChild(div);
-  });
-}
-window.useItem = function(idx){
-  const it = state.player.inventory[idx]; if(!it) return;
-  if(it.type === "heal" || it.name.toLowerCase().includes("poção")){ state.player.hp = Math.min(100, state.player.hp + (it.value||20)); state.player.inventory.splice(idx,1); appendSystem(`Você usou ${it.name} e recuperou vida.`); }
-  else appendSystem(`Você examina ${it.name}.`);
-  renderStats(); renderInventory();
-}
+function renderInventory(){ const n = document.getElementById("inventoryArea"); n.innerHTML=""; if(state.player.inventory.length===0){ n.innerHTML="<div class='muted'>vazio</div>"; return; } state.player.inventory.forEach((it,idx)=>{ const div = document.createElement("div"); div.className="muted"; div.innerHTML = `${escapeHtml(it.name)} ${it.power?("• pwr:"+escapeHtml(it.power)):""} <button style="float:right" onclick="useItem(${idx})">usar</button>`; n.appendChild(div); }); }
+window.useItem = function(idx){ const it = state.player.inventory[idx]; if(!it) return; if(it.type==="heal"||it.name.toLowerCase().includes("poção")){ state.player.hp = Math.min(300,state.player.hp + (it.value||20)); state.player.inventory.splice(idx,1); appendSystem(`Você usou ${it.name} e recuperou vida.`); } else appendSystem(`Você examina ${it.name}.`); renderAll(); }
 
 /* =========================
-   Rede: enviar ação ao servidor com timeout e fallback
+   Carregamento inicial / persistência
    ========================= */
-const DM = new DialogueManager(state);
+try{ const h = JSON.parse(localStorage.getItem("isekai_history")||"[]"); if(Array.isArray(h) && h.length){ h.forEach(m=>appendMessage(m.who,m.text)); state.story = h.slice(); } }catch(e){ /* ignore */ }
 
-function disableInputs(dis){
-  document.getElementById("sendBtn").disabled = dis;
-  document.getElementById("playerInput").disabled = dis;
-  const spinnerEl = document.getElementById("sendSpinner");
-  if(dis){
-    if(!spinnerEl){ const sp = document.createElement("span"); sp.id = "sendSpinner"; sp.className = "spinner"; document.getElementById("sendBtn").appendChild(sp); }
-  } else { const sp = document.getElementById("sendSpinner"); if(sp) sp.remove(); }
-}
-
-async function sendPlayerAction(actionText){
-  if(!actionText) return;
-  appendPlayer(actionText);
-  const force = document.getElementById("forceFallback").checked;
-  disableInputs(true);
-  try{
-    if(force){
-      const out = DM.localFallback(actionText); applyNarrative(out); return;
-    }
-    // payload with compacted context
-    const payload = { sessionId, action: actionText, context: DM.compactContext(12) };
-    // fetch with timeout
-    const controller = new AbortController();
-    const timeoutId = setTimeout(()=> controller.abort(), 12000); // 12s timeout
-    const res = await fetch(API_PATH, { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify(payload), signal: controller.signal });
-    clearTimeout(timeoutId);
-    if(!res.ok){
-      console.warn("API returned non-200, using fallback", res.status);
-      const out = DM.localFallback(actionText); applyNarrative(out); return;
-    }
-    const data = await res.json();
-    applyNarrative(data);
-  } catch(err){
-    console.warn("Network/API error -> fallback", err);
-    const out = DM.localFallback(actionText);
-    applyNarrative(out);
-  } finally {
-    disableInputs(false);
-    renderStats(); renderInventory();
-    // persist some history locally (last 40 events)
-    try { localStorage.setItem("isekai_history", JSON.stringify(state.story.slice(-40))); } catch(e){}
-  }
-}
-
-/* Apply narrative safely */
-function applyNarrative(data){
-  if(typeof data === "string") data = { narrative: data };
-  if(data.narrative) appendSystem(data.narrative);
-  if(data.npc) appendNPC(data.npc.name, data.npc.text);
-  if(Array.isArray(data.choices) && data.choices.length){
-    const s = document.getElementById("story"); const block = document.createElement("div"); block.className = "msg";
-    block.innerHTML = `<div class="who">Escolhas</div>`; const inner = document.createElement("div"); inner.className = "text";
-    data.choices.forEach(c => {
-      const ch = document.createElement("span"); ch.className = "choice"; ch.textContent = c.text; ch.onclick = ()=> sendPlayerAction(c.text);
-      inner.appendChild(ch);
-    });
-    block.appendChild(inner); s.appendChild(block); s.scrollTop = s.scrollHeight;
-  }
-  if(data.updates){
-    const u = data.updates;
-    if(typeof u.hp === "number"){ state.player.hp = Math.max(0, Math.min(200, state.player.hp + u.hp)); }
-    if(typeof u.gold === "number"){ state.player.gold += u.gold; }
-    if(u.inventoryAdd && typeof u.inventoryAdd.name === "string"){ state.player.inventory.push(u.inventoryAdd); }
-    if(u.statChanges && typeof u.statChanges === "object"){ Object.entries(u.statChanges).forEach(([k,v])=>{ if(typeof v === "number" && state.player.stats[k] !== undefined) state.player.stats[k] += v; }); }
-  }
-}
-
-/* =========================
-   Eventos UI
-   ========================= */
-document.getElementById("sendBtn").onclick = ()=> {
-  const txt = document.getElementById("playerInput").value.trim(); if(!txt) return;
-  document.getElementById("playerInput").value = "";
-  sendPlayerAction(txt);
-};
-document.getElementById("playerInput").addEventListener("keydown", e => { if(e.key === "Enter") { e.preventDefault(); document.getElementById("sendBtn").click(); }});
-document.getElementById("btnYear").onclick = ()=> { state.player.age++; appendSystem(`Você avança um ano. Agora ${state.player.age}.`); sendPlayerAction(`${state.player.name} viveu mais um ano. Descreve um acontecimento marcante.`); renderStats(); };
-document.getElementById("btnTrain").onclick = ()=> { const keys = Object.keys(state.player.stats); const k = keys[Math.floor(Math.random()*keys.length)]; state.player.stats[k] += 1; appendSystem(`Treinamento: +1 em ${k}.`); renderStats(); };
-document.getElementById("btnRest").onclick = ()=> { const heal = 10 + Math.floor(Math.random()*15); state.player.hp = Math.min(100, state.player.hp + heal); appendSystem(`Você descansou e recuperou ${heal} HP.`); renderStats(); };
-document.getElementById("btnExplore").onclick = ()=> { const found = Math.random()<0.6 ? {name:"Poção de cura",type:"heal",value:20} : {name:"Fragmento antigo",type:"artifact",power:2}; state.player.inventory.push(found); appendSystem(`Exploração: você encontrou ${found.name}.`); renderInventory(); sendPlayerAction(`${state.player.name} explora ${state.location} e encontra ${found.name}. Crie 2 opções.`); };
-document.getElementById("btnExamples").onclick = ()=> { document.getElementById("playerInput").value = 'Garuk: "Quem é você?"'; };
-document.querySelectorAll(".choice").forEach(el => el.addEventListener("click", ()=> { const action = el.dataset.action; sendPlayerAction(action); }));
-
-/* Load persisted history (if any) */
-try{
-  const h = JSON.parse(localStorage.getItem("isekai_history") || "[]");
-  if(Array.isArray(h) && h.length){ h.forEach(m=> appendMessage(m.who,m.text)); state.story = h.slice(); }
-} catch(e){ /* ignore */ }
-
-renderStats(); renderInventory();
+renderAll();
 appendSystem("Cena: você caminha pela Floresta de Elyndar e encontra Leo, um caçador. Digite algo para conversar/agir.");
 </script>
 </body>
