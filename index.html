@@ -3,131 +3,88 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Isekai Life — Chat Narrativo (v4)</title>
+<title>Isekai Life — Chat Narrativo</title>
 <style>
-  :root{
-    --bg-overlay: rgba(6,10,15,0.65);
-    --card: rgba(18,20,22,0.75);
-    --accent: #67ff8d;
-    --muted: #cbd5e1;
-  }
-  html,body{height:100%;margin:0;font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue";background:#000;}
-  body{
-    background-image: url('https://images.unsplash.com/photo-1503264116251-35a269479413?q=80&w=1600&auto=format&fit=crop');
-    background-size:cover;background-position:center;
-    display:flex;align-items:center;justify-content:center;padding:28px;
-    color: #e6eef3;
-  }
-  .wrap{width:1060px;max-width:98%;display:grid;grid-template-columns:320px 1fr 320px;gap:18px;}
-  .card{background:var(--card);padding:16px;border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,0.6);border:1px solid rgba(255,255,255,0.03);}
-  header h1{margin:0;font-weight:600;letter-spacing:0.4px;}
-  .stats .stat{margin:10px 0;font-size:13px;}
-  .bar{height:10px;background:rgba(0,0,0,0.35);border-radius:999px;overflow:hidden;margin-top:6px;}
-  .fill{height:100%;background:linear-gradient(90deg,var(--accent),#2fe4b8);width:30%;}
-  .buttons{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;}
+  :root{--accent:#67ff8d;--bg: #0f1113;--card:rgba(18,20,22,0.85);--muted:#cbd5e1}
+  html,body{height:100%;margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial;background:
+    linear-gradient(180deg, rgba(0,0,0,0.6), rgba(0,0,0,0.8)),
+    url('https://images.unsplash.com/photo-1503264116251-35a269479413?q=80&w=1600&auto=format&fit=crop') center/cover fixed;
+    color:#e6eef3}
+  .wrap{width:100%;max-width:1100px;margin:28px auto;display:grid;grid-template-columns:300px 1fr 260px;gap:18px}
+  .card{background:var(--card);padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.03);box-shadow:0 8px 30px rgba(0,0,0,0.5)}
+  h1{margin:0 0 8px 0;font-weight:600}
+  .small{font-size:13px;color:rgba(230,238,243,0.86)}
+  .stat{margin:8px 0}
+  .bar{height:10px;background:rgba(255,255,255,0.06);border-radius:999px;overflow:hidden}
+  .fill{height:100%;background:linear-gradient(90deg,var(--accent),#2fe4b8);width:40%}
+  .buttons{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
   button{background:#222;border:1px solid rgba(255,255,255,0.04);color:var(--muted);padding:8px 10px;border-radius:8px;cursor:pointer;font-weight:600}
   button.primary{background:linear-gradient(180deg,#2b2b2b,#343434);color:white}
-  #story{height:62vh;overflow:auto;padding:12px;background:linear-gradient(180deg,rgba(0,0,0,0.18),rgba(0,0,0,0.06));border-radius:8px;border:1px solid rgba(255,255,255,0.02)}
+  #story{height:66vh;overflow:auto;padding:12px;background:linear-gradient(180deg,rgba(0,0,0,0.12),rgba(0,0,0,0.02));border-radius:8px}
   .msg{margin-bottom:12px}
-  .msg .who{font-weight:700;font-size:13px;margin-bottom:6px}
-  .msg .text{white-space:pre-wrap;line-height:1.4}
+  .who{font-weight:700;margin-bottom:6px}
+  .text{white-space:pre-wrap;line-height:1.4}
   .inputRow{display:flex;gap:8px;margin-top:12px}
   input[type="text"]{flex:1;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:rgba(255,255,255,0.02);color:inherit}
-  .small{font-size:12px;opacity:0.8}
-  #version{position:fixed;right:22px;bottom:14px;color:rgba(255,255,255,0.55);font-size:12px}
-  .inventory-list{max-height:28vh;overflow:auto}
-  .choice{display:inline-block;background:rgba(255,255,255,0.04);padding:6px 10px;border-radius:999px;margin:4px 4px 0 0;cursor:pointer;font-size:13px}
-  .meta{display:flex;justify-content:space-between;gap:8px}
-  .meta .col{flex:1}
-  .centerAction{display:flex;align-items:center;justify-content:center;gap:8px}
-  footer .muted{opacity:0.7;font-size:13px}
+  .choice{display:inline-block;background:rgba(255,255,255,0.04);padding:6px 10px;border-radius:999px;margin:6px 6px 0 0;cursor:pointer;font-size:13px}
+  #version{position:fixed;right:18px;bottom:14px;color:rgba(255,255,255,0.55);font-size:12px}
+  .muted{opacity:0.75;font-size:13px}
 </style>
 </head>
 <body>
 <div class="wrap">
-
-  <!-- LEFT: Player / Controls -->
+  <!-- LEFT -->
   <div class="card">
-    <header>
-      <h1>Isekai Life</h1>
-      <div class="small">Personagem: <strong id="playerName">Arion</strong></div>
-    </header>
+    <h1>Isekai Life</h1>
+    <div class="small">Personagem: <strong id="playerName">Garuk</strong></div>
+    <div class="stat">Idade: <strong id="age">10</strong></div>
+    <div class="stat">Vida: <strong id="hp">100</strong></div>
+    <div class="bar" aria-hidden><div id="hpFill" class="fill" style="width:100%"></div></div>
+    <div style="display:flex;gap:8px;margin-top:10px">
+      <div style="flex:1"><div class="muted">Ouro</div><div id="gold">45</div></div>
+      <div style="flex:1"><div class="muted">Reputação</div><div id="rep">0</div></div>
+    </div>
+    <hr style="opacity:0.06;margin:12px 0">
+    <div class="muted">Atributos</div>
+    <div class="small">Força <span id="s_str">40</span></div><div class="bar"><div id="fill_str" class="fill" style="width:40%"></div></div>
+    <div class="small">Inteligência <span id="s_int">60</span></div><div class="bar"><div id="fill_int" class="fill" style="width:60%"></div></div>
+    <div class="small">Carisma <span id="s_chr">30</span></div><div class="bar"><div id="fill_chr" class="fill" style="width:30%"></div></div>
+    <div class="small">Sorte <span id="s_lck">50</span></div><div class="bar"><div id="fill_lck" class="fill" style="width:50%"></div></div>
 
-    <section class="stats" style="margin-top:12px">
-      <div class="stat">Idade: <strong id="age">10</strong></div>
-      <div class="stat">Vida (HP): <strong id="hp">100</strong></div>
-      <div class="bar" aria-hidden><div id="hpFill" class="fill" style="width:100%"></div></div>
-
-      <div style="display:flex;gap:10px;margin-top:8px">
-        <div style="flex:1">
-          <div class="small">Ouro</div><div id="gold">45</div>
-        </div>
-        <div style="flex:1">
-          <div class="small">Reputação</div><div id="rep">0</div>
-        </div>
-      </div>
-
-      <hr style="border:none;border-top:1px solid rgba(255,255,255,0.03);margin:12px 0">
-
-      <div class="small">Atributos</div>
-      <div class="small" style="margin-top:8px">Força <span id="s_str">40</span></div>
-      <div class="bar"><div class="fill" id="fill_str" style="width:40%"></div></div>
-
-      <div class="small" style="margin-top:8px">Inteligência <span id="s_int">60</span></div>
-      <div class="bar"><div class="fill" id="fill_int" style="width:60%"></div></div>
-
-      <div class="small" style="margin-top:8px">Carisma <span id="s_chr">30</span></div>
-      <div class="bar"><div class="fill" id="fill_chr" style="width:30%"></div></div>
-
-      <div class="small" style="margin-top:8px">Sorte <span id="s_lck">50</span></div>
-      <div class="bar"><div class="fill" id="fill_lck" style="width:50%"></div></div>
-
-      <div style="margin-top:12px" class="buttons">
-        <button class="primary" id="btnYear">Avançar Ano</button>
-        <button id="btnTrain">Treinar</button>
-        <button id="btnRest">Descansar</button>
-        <button id="btnExplore">Explorar</button>
-      </div>
-    </section>
-
-    <hr style="border:none;border-top:1px solid rgba(255,255,255,0.03);margin:12px 0">
-
-    <div class="small">Inventário</div>
-    <div class="inventory-list" id="inventoryArea" style="margin-top:8px">
-      <!-- items -->
+    <div class="buttons" style="margin-top:12px">
+      <button id="btnYear" class="primary">Avançar Ano</button>
+      <button id="btnTrain">Treinar</button>
+      <button id="btnRest">Descansar</button>
+      <button id="btnExplore">Explorar</button>
     </div>
 
+    <hr style="opacity:0.06;margin:12px 0">
+    <div class="muted">Inventário</div>
+    <div id="inventoryArea" style="margin-top:8px;max-height:22vh;overflow:auto"></div>
   </div>
 
-  <!-- CENTER: Story & Chat -->
-  <div class="card" style="display:flex;flex-direction:column;">
+  <!-- CENTER -->
+  <div class="card" style="display:flex;flex-direction:column">
     <div style="display:flex;justify-content:space-between;align-items:center">
-      <div>
-        <div class="small">Local: <strong id="location">Floresta de Eldyn</strong></div>
-        <div class="small">Sessão: <span id="sessionId" class="small muted"></span></div>
-      </div>
-      <div class="small">Modo IA: <span id="iaMode">API</span></div>
+      <div><div class="muted">Local: <strong id="location">Floresta de Elyndar</strong></div></div>
+      <div class="muted">Modo IA: <span id="iaMode">API</span></div>
     </div>
 
-    <div id="story" aria-live="polite" style="margin-top:12px;flex:1;">
-      <!-- history messages go here -->
-    </div>
+    <div id="story" aria-live="polite" style="margin-top:12px;flex:1"></div>
 
     <div style="margin-top:12px">
       <div class="inputRow">
-        <input id="playerInput" type="text" placeholder='Ex: Garuk: "Quem é você?" ou "Atacar Leo"' maxlength="400" />
+        <input id="playerInput" type="text" placeholder='Ex: Garuk: "Quem é você?"' maxlength="500" />
         <button id="sendBtn" class="primary">Enviar</button>
-        <button id="btnChoose" title="Exemplos">Ex</button>
+        <button id="btnExamples">Ex</button>
       </div>
-      <div style="margin-top:8px" class="small">
-        Use linguagem natural, descreva falas ou ações. O narrador (IA) responderá com diálogo e consequências.
-      </div>
+      <div class="muted" style="margin-top:8px">Use linguagem natural — fale, aja ou descreva.</div>
     </div>
   </div>
 
-  <!-- RIGHT: Choices / Version / Quick actions -->
+  <!-- RIGHT -->
   <div class="card">
-    <div class="small">Ações rápidas</div>
+    <div class="muted">Ações rápidas</div>
     <div style="margin-top:8px">
       <div class="choice" data-action='Garuk: "Quem é você?"'>Perguntar quem é</div>
       <div class="choice" data-action='Garuk: "Quer trabalhar junto?"'>Propor parceria</div>
@@ -135,357 +92,133 @@
       <div class="choice" data-action='Garuk oferece ouro.'>Oferecer ouro</div>
     </div>
 
-    <hr style="border:none;border-top:1px solid rgba(255,255,255,0.03);margin:12px 0">
+    <hr style="opacity:0.06;margin:12px 0">
+    <label><input type="checkbox" id="forceFallback"> Forçar fallback local (sem IA)</label>
 
-    <div class="small">Modo fallback</div>
-    <div style="margin-top:6px">
-      <label><input type="checkbox" id="forceFallback"> Forçar fallback procedural</label>
-    </div>
-
-    <hr style="border:none;border-top:1px solid rgba(255,255,255,0.03);margin:12px 0">
-
-    <div class="small">Versão</div>
-    <div style="margin-top:6px"><strong>Isekai Life v4.0</strong></div>
-
-    <hr style="border:none;border-top:1px solid rgba(255,255,255,0.03);margin:12px 0">
-
-    <div class="small">Notas</div>
-    <div class="small" style="margin-top:8px">Chat narrativo com IA + procedural fallback. Para IA real configure o servidor (veja README).</div>
+    <hr style="opacity:0.06;margin:12px 0">
+    <div class="muted">Versão</div><div style="margin-top:6px"><strong>Isekai Life v4.0</strong></div>
   </div>
-
 </div>
 
 <div id="version">Isekai Life v4.0</div>
 
 <script>
-/* -------------------------
-  Frontend game + chat logic
-   - calls /api/narrate on server
-   - falls back to local generator if needed
--------------------------*/
-
-const API_BASE = "/api"; // when hosting server, keep this; for local-only run keep server disabled and rely on fallback
+/* ---------- Config ---------- */
+const API_PATH = "/api/narrate"; // servidor (Render) expõe essa rota
 let sessionId = localStorage.getItem("isekai_session") || ("s_"+Math.random().toString(36).slice(2,10));
 localStorage.setItem("isekai_session", sessionId);
-document.getElementById("sessionId").textContent = sessionId;
 
+/* ---------- State ---------- */
 const state = {
-  player: {
-    name: "Garuk",
-    age: 10,
-    hp: 100,
-    gold: 45,
-    reputation: 0,
-    stats: { strength: 4, intelligence: 6, charisma: 3, luck: 5, mana: 2 },
-    inventory: [ {name:"Espada velha",type:"weapon",power:3} ]
-  },
+  player: { name:"Garuk", age:10, hp:100, gold:45, reputation:0, stats:{ strength:4, intelligence:6, charisma:3, luck:5, mana:2 }, inventory:[{name:"Espada velha",power:3}] },
   location: "Floresta de Elyndar",
-  npcs: [ {name:"Leo", role:"caçador", attitude:"desconfiado"} ],
-  story: [],
-  mode: "api" // "api" or "fallback"
+  npcs: [{name:"Leo", role:"caçador", attitude:"desconfiado"}],
+  story: []
 };
 
-document.getElementById("iaMode").textContent = (state.mode === "api" ? "API" : "FALLBACK");
-renderStats();
-renderInventory();
-appendSystem("A história começou. Você reencarnou em Elyndar.");
-
-/* UI events */
-document.getElementById("btnYear").onclick = () => {
-  advanceYear();
-};
-document.getElementById("btnTrain").onclick = () => {
-  trainMenu();
-};
-document.getElementById("btnRest").onclick = () => {
-  restAction();
-};
-document.getElementById("btnExplore").onclick = () => {
-  exploreAction();
-};
-document.getElementById("sendBtn").onclick = () => sendPlayerAction();
-document.getElementById("playerInput").addEventListener("keydown", e => { if(e.key === "Enter") sendPlayerAction(); });
-document.getElementById("btnChoose").onclick = () => showExamples();
-document.getElementById("forceFallback").onchange = (e) => {
-  document.getElementById("iaMode").textContent = e.target.checked ? "FALLBACK" : "API";
-};
-
-document.querySelectorAll(".choice").forEach(el=>{
-  el.addEventListener("click", ()=>{
-    const action = el.dataset.action;
-    document.getElementById("playerInput").value = action;
-    sendPlayerAction();
-  });
-});
-
-/* ---------- Core UI helpers ---------- */
+/* ---------- UI helpers ---------- */
 function renderStats(){
   document.getElementById("playerName").textContent = state.player.name;
   document.getElementById("age").textContent = state.player.age;
   document.getElementById("hp").textContent = state.player.hp;
-  document.getElementById("hpFill").style.width = Math.max(0, Math.min(100, state.player.hp)) + "%";
+  document.getElementById("hpFill").style.width = Math.max(0,Math.min(100,state.player.hp)) + "%";
   document.getElementById("gold").textContent = state.player.gold;
   document.getElementById("rep").textContent = state.player.reputation;
-
-  document.getElementById("s_str").textContent = state.player.stats.strength*10;
-  document.getElementById("fill_str").style.width = Math.min(100, state.player.stats.strength*10)+"%";
-  document.getElementById("s_int").textContent = state.player.stats.intelligence*10;
-  document.getElementById("fill_int").style.width = Math.min(100, state.player.stats.intelligence*10)+"%";
-  document.getElementById("s_chr").textContent = state.player.stats.charisma*10;
-  document.getElementById("fill_chr").style.width = Math.min(100, state.player.stats.charisma*10)+"%";
-  document.getElementById("s_lck").textContent = state.player.stats.luck*10;
-  document.getElementById("fill_lck").style.width = Math.min(100, state.player.stats.luck*10)+"%";
+  document.getElementById("s_str").textContent = state.player.stats.strength*10; document.getElementById("fill_str").style.width = Math.min(100,state.player.stats.strength*10)+"%";
+  document.getElementById("s_int").textContent = state.player.stats.intelligence*10; document.getElementById("fill_int").style.width = Math.min(100,state.player.stats.intelligence*10)+"%";
+  document.getElementById("s_chr").textContent = state.player.stats.charisma*10; document.getElementById("fill_chr").style.width = Math.min(100,state.player.stats.charisma*10)+"%";
+  document.getElementById("s_lck").textContent = state.player.stats.luck*10; document.getElementById("fill_lck").style.width = Math.min(100,state.player.stats.luck*10)+"%";
   document.getElementById("location").textContent = state.location;
 }
-
 function renderInventory(){
-  const n = document.getElementById("inventoryArea");
-  n.innerHTML = "";
-  if(state.player.inventory.length === 0){ n.innerHTML = "<div class='small'>vazio</div>"; return; }
-  state.player.inventory.forEach((it, idx)=>{
-    const div = document.createElement("div");
-    div.className = "small";
-    div.innerHTML = `${it.name} ${it.power ? "• pwr:"+it.power : ""} <button style="float:right" onclick="useItem(${idx})">usar</button>`;
-    n.appendChild(div);
+  const node = document.getElementById("inventoryArea"); node.innerHTML = "";
+  if(state.player.inventory.length===0){ node.innerHTML = "<div class='muted'>vazio</div>"; return; }
+  state.player.inventory.forEach((it,idx)=>{
+    const div = document.createElement("div"); div.className = "small"; div.innerHTML = `${escapeHtml(it.name)} ${it.power?("• pwr:"+it.power):""} <button style="float:right" onclick="useItem(${idx})">usar</button>`; node.appendChild(div);
   });
 }
+function appendMessage(who, text){ state.story.push({who,text,time:Date.now()}); const s=document.getElementById("story"); const b=document.createElement("div"); b.className="msg"; b.innerHTML=`<div class="who">${escapeHtml(who)}</div><div class="text">${escapeHtml(text)}</div>`; s.appendChild(b); s.scrollTop = s.scrollHeight; }
+function appendSystem(text){ appendMessage("Narrador", text); }
+function appendPlayer(text){ appendMessage(state.player.name, text); }
+function appendNPC(name,text){ appendMessage(name, text); }
+function escapeHtml(s){ return (s+"").replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[c])); }
+
+/* ---------- Actions ---------- */
 window.useItem = function(idx){
-  const it = state.player.inventory[idx];
-  if(!it) return;
-  if(it.type === "heal" || it.name.toLowerCase().includes("poção")){
-    state.player.hp = Math.min(100, state.player.hp + (it.value||20));
-    state.player.inventory.splice(idx,1);
-    appendSystem(`Você usou ${it.name} e recuperou vida.`);
-  } else {
-    appendSystem(`Você examina ${it.name}. Parece útil.`);
-  }
+  const it = state.player.inventory[idx]; if(!it) return;
+  if(it.type === "heal" || it.name.toLowerCase().includes("poção")){ state.player.hp = Math.min(100, state.player.hp + (it.value||20)); state.player.inventory.splice(idx,1); appendSystem(`Você usou ${it.name} e recuperou vida.`); }
+  else appendSystem(`Você examina ${it.name}.`);
   renderStats(); renderInventory();
 };
 
-/* ---------- Story area ---------- */
-function appendMessage(who, text){
-  state.story.push({who, text, time: Date.now()});
-  const s = document.getElementById("story");
-  const block = document.createElement("div");
-  block.className = "msg";
-  block.innerHTML = `<div class="who">${who}</div><div class="text">${escapeHtml(text)}</div>`;
-  s.appendChild(block);
-  s.scrollTop = s.scrollHeight;
-}
-function appendSystem(text){ appendMessage("Narrador", text); }
-function appendPlayer(text){ appendMessage(state.player.name, text); }
-function appendNPC(name, text){ appendMessage(name, text); }
-
-/* ---------- Actions: Year / Train / Rest / Explore ---------- */
-function advanceYear(){
-  state.player.age += 1;
-  appendSystem(`Você avança um ano. Idade agora ${state.player.age}.`);
-  // small local event
-  if(Math.random() < 0.45) {
-    const ev = localLifeEvent();
-    appendSystem(ev);
-  } else {
-    // offer a short AI prompt to generate a richer yearly vignette
-    sendNarrativePrompt(`${state.player.name} envelheceu até ${state.player.age}. Resuma um acontecimento significativo desse ano.` , {quiet:true});
-  }
-  renderStats();
+function localNarrativeModel(action){
+  const a = (action||"").toLowerCase();
+  if(a.includes("quem") || a.includes("quem é")) return { narrative:'Leo: "Sou Leo, caçador desta floresta. Por que pergunta?"', choices:[{text:"Pedir ajuda"},{text:"Atacar"}], updates:{} };
+  if(a.includes("roubar") || a.includes("atacar")){ const dmg = Math.floor(Math.random()*18)+4; return { narrative:`Conflito: você tenta ação violenta e perde ${dmg} HP.`, choices:[{text:"Desculpar-se"},{text:"Fugir"}], updates:{hp:-dmg} }; }
+  const templates = ["A brisa sussurra entre as árvores. Leo observa e comenta sobre ruínas antigas ao norte.", "Leo aponta para marcas de garras: \"Algo passou por aqui.\"", "Leo pega uma corda e oferece: \"Se for explorar, leve isto.\""];
+  return { narrative: templates[Math.floor(Math.random()*templates.length)], choices:[{text:"Investigar marcas de garras"},{text:"Seguir Leo"}], updates:{} };
 }
 
-function trainMenu(){
-  const opts = ["Força","Inteligência","Carisma","Sorte","Mana"];
-  const pick = opts[Math.floor(Math.random()*opts.length)];
-  state.player.stats[mapAttrKey(pick)] += 1;
-  appendSystem(`Treinamento: você treinou ${pick} e melhorou.`);
-  renderStats();
-}
-
-function restAction(){
-  const heal = 10 + Math.floor(Math.random()*15);
-  state.player.hp = Math.min(100, state.player.hp + heal);
-  appendSystem(`Você descansou e recuperou ${heal} HP.`);
-  renderStats();
-}
-
-function exploreAction(){
-  // quick local exploration + then optionally send chat prompt to IA for richer discovery
-  const found = Math.random() < 0.5 ? {name:"Poção de cura", type:"heal", value:20} : {name:"Fragmento antigo", type:"artifact', power:2};
-  // avoid invalid artifact text node; fix fragment:
-  const found2 = Math.random() < 0.5 ? {name:"Poção de cura", type:"heal", value:20} : {name:"Fragmento antigo", type:"artifact", power:2};
-  state.player.inventory.push(found2);
-  renderInventory();
-  appendSystem(`Exploração: você encontrou ${found2.name}.`);
-  // small IA story branch
-  sendNarrativePrompt(`${state.player.name} explora ${state.location} e encontra ${found2.name}. Crie 2 opções de escolha (seguir, investigar, vender, etc.)`, {quiet:true});
-}
-
-/* ---------- Chat send logic ---------- */
-async function sendPlayerAction(){
-  const raw = document.getElementById("playerInput").value.trim();
-  if(!raw) return;
-  document.getElementById("playerInput").value = "";
-  appendPlayer(raw);
-  // Add to local story memory
-  state.story.push({role:"player_action", text:raw, time:Date.now()});
-  // ask server/model
-  const forceFallback = document.getElementById("forceFallback").checked;
+/* ---------- Network: send action to server or fallback ---------- */
+async function sendPlayerAction(actionText){
+  if(!actionText) return;
+  const input = document.getElementById("playerInput");
+  input.value = "";
+  appendPlayer(actionText);
+  const force = document.getElementById("forceFallback").checked;
+  disableInputs(true);
   try{
-    if(forceFallback){
-      const out = localNarrativeModel(raw);
+    if(force){
+      const out = localNarrativeModel(actionText);
       applyNarrative(out);
       return;
     }
-    // call server
-    const payload = {
-      sessionId,
-      action: raw,
-      context: {
-        player: state.player,
-        location: state.location,
-        npcs: state.npcs,
-        recent: state.story.slice(-20)
-      }
-    };
-    const res = await fetch(API_BASE + "/narrate", {
-      method: "POST",
-      headers: {"Content-Type":"application/json"},
-      body: JSON.stringify(payload)
-    });
-    if(!res.ok){
-      const txt = await res.text();
-      console.warn("API failed:", res.status, txt);
-      const out = localNarrativeModel(raw);
-      applyNarrative(out);
-      return;
-    }
+    const payload = { sessionId, action: actionText, context: { player: state.player, location: state.location, npcs: state.npcs, recent: state.story.slice(-12) } };
+    const res = await fetch(API_PATH, { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify(payload) });
+    if(!res.ok) throw new Error("api-error");
     const data = await res.json();
     applyNarrative(data);
   } catch(err){
-    console.error("Network/Server error", err);
-    const out = localNarrativeModel(raw);
+    console.warn("API fail -> fallback", err);
+    const out = localNarrativeModel(actionText);
     applyNarrative(out);
-  }
+  } finally { disableInputs(false); renderStats(); renderInventory(); }
 }
 
-/* ---------- Apply narrative returned by API/local ---------- */
 function applyNarrative(data){
-  // data expected shape: { narrative: "text", npc: {name,text}?, choices: [ {text, actionId} ], updates: {hp,gold,statChanges,inventoryAdd} }
+  // expected: { narrative, npc?, choices[], updates? }
   if(typeof data === "string") data = { narrative: data };
   if(data.narrative) appendSystem(data.narrative);
   if(data.npc) appendNPC(data.npc.name, data.npc.text);
   if(Array.isArray(data.choices) && data.choices.length){
-    // render choices inline as buttons
-    const s = document.getElementById("story");
-    const block = document.createElement("div");
-    block.className = "msg";
-    block.innerHTML = `<div class="who">Escolhas</div><div class="text"></div>`;
-    const inner = block.querySelector(".text");
-    data.choices.forEach(c=>{
-      const ch = document.createElement("span");
-      ch.className = "choice";
-      ch.textContent = c.text;
-      ch.onclick = ()=> {
-        // when clicked, send choice text as player action
-        document.getElementById("playerInput").value = c.text;
-        sendPlayerAction();
-      };
+    // show choices as clickable chips
+    const s=document.getElementById("story"); const block=document.createElement("div"); block.className="msg";
+    const inner=document.createElement("div"); inner.className="text"; data.choices.forEach(c=>{
+      const ch=document.createElement("span"); ch.className="choice"; ch.textContent = c.text; ch.onclick = ()=> sendPlayerAction(c.text);
       inner.appendChild(ch);
     });
-    s.appendChild(block);
-    s.scrollTop = s.scrollHeight;
+    block.innerHTML = `<div class="who">Escolhas</div>`; block.appendChild(inner); s.appendChild(block); s.scrollTop = s.scrollHeight;
   }
   if(data.updates){
-    // apply world updates safely
     const u = data.updates;
     if(typeof u.hp === "number") state.player.hp = Math.max(0, Math.min(200, state.player.hp + u.hp));
     if(typeof u.gold === "number") state.player.gold += u.gold;
-    if(u.inventoryAdd) { state.player.inventory.push(u.inventoryAdd); renderInventory(); }
-    if(u.statChanges) {
-      Object.keys(u.statChanges).forEach(k => {
-        if(state.player.stats[k] !== undefined) state.player.stats[k] += u.statChanges[k];
-      });
-    }
-    renderStats();
+    if(u.inventoryAdd) state.player.inventory.push(u.inventoryAdd);
+    if(u.statChanges) Object.entries(u.statChanges).forEach(([k,v])=>{ if(state.player.stats[k]!==undefined) state.player.stats[k]+=v; });
   }
 }
 
-/* ---------- Local fallback narrative generator (simple but safe) ---------- */
-function localNarrativeModel(playerAction){
-  // very simple pattern-based responses to avoid reliance on server
-  const act = playerAction.toLowerCase();
-  let narrative = "";
-  const choices = [];
-  const updates = {};
-  if(act.includes("quem") || act.includes("quem é")){
-    narrative = "Um homem chamado Leo ergue a cabeça. Ele te encara com cuidado e responde: \"Sou Leo, caçador desta floresta. Por que pergunta?\"";
-    choices.push({text:"Dizer que busca trabalho"}, {text:"Desconfiar e recuar"});
-  } else if(act.includes("ataque") || act.includes("atacar") || act.includes("roubar")){
-    narrative = "Leo percebe seu movimento hostil. Ele saca uma adaga. Uma luta rápida acontece: você se machuca, mas o confronto termina.";
-    updates.hp = -Math.floor(Math.random()*18)-4;
-    choices.push({text:"Tentar se desculpar"}, {text:"Fugir correndo"});
-  } else if(act.includes("trabalhar") || act.includes("parceria")){
-    narrative = "Leo acha a proposta interessante. Ele aceita ajudar por uma parte dos lucros. Vocês combinam partir ao amanhecer.";
-    updates.reputation = 1;
-    choices.push({text:"Planejar a expedição"}, {text:"Ir dormir"});
-  } else if(act.includes("oferecer") || act.includes("ouro")){
-    const goldGiven = Math.min(5, state.player.gold);
-    state.player.gold -= goldGiven;
-    narrative = `Você oferece ${goldGiven} moedas. Leo sorri com desconfiança, mas aceita o pagamento como sinal de boa vontade.`;
-    updates.gold = -goldGiven;
-    choices.push({text:"Pedir favores"}, {text:"Sair"});
-  } else {
-    // default imaginative reply
-    const templates = [
-      "A brisa sussurra entre as árvores. Leo te observa e comenta algo enigmático sobre ruínas antigas ao norte.",
-      "Leo se levanta e aponta para marcas de garras perto do caminho: \"Algo passou por aqui essa semana.\"",
-      "Você sente um pressentimento. Leo pega uma corda e oferece: \"Se for explorar, leve isto.\""
-    ];
-    narrative = templates[Math.floor(Math.random()*templates.length)];
-    choices.push({text:"Investigar marcas de garras"}, {text:"Seguir Leo"});
-  }
-  return { narrative, choices, updates };
-}
-
-/* ---------- Small helpers ---------- */
-function mapAttrKey(name){
-  const map = { "Força":"strength","Inteligência":"intelligence","Carisma":"charisma","Sorte":"luck","Mana":"mana" };
-  return map[name] || name.toLowerCase();
-}
-function escapeHtml(s){ return (s+"").replace(/[&<>"']/g, c=> ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
-
-/* ---------- Server call wrapper for narrative ---------- */
-async function sendNarrativePrompt(text, opts = {}){
-  // opts.quiet = true (append system message not player message)
-  const forceFallback = document.getElementById("forceFallback").checked;
-  if(forceFallback){
-    const out = localNarrativeModel(text);
-    applyNarrative(out);
-    return;
-  }
-  try{
-    const payload = { sessionId, action: text, context: { player: state.player, location: state.location, npcs: state.npcs, recent: state.story.slice(-20) } };
-    const res = await fetch(API_BASE + "/narrate", { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify(payload) });
-    if(!res.ok){ throw new Error("server-error"); }
-    const data = await res.json();
-    applyNarrative(data);
-  } catch(e){
-    console.warn("Narration API failed, using fallback.", e);
-    const out = localNarrativeModel(text);
-    applyNarrative(out);
-  }
-}
-
-/* ---------- Local life event generator ---------- */
-function localLifeEvent(){
-  const choices = [
-    "Você ouve um sussurro vindo da trilha. Alguém deixou rastros.",
-    "Uma caravana passa e oferece contratação temporária.",
-    "Há boatos de uma masmorra nas colinas.",
-    "Uma praga atinge as plantações próximas — há necessidade de ajuda."
-  ];
-  return choices[Math.floor(Math.random()*choices.length)];
-}
-
-/* ---------- initial example scene ---------- */
+/* ---------- UI helpers ---------- */
+function disableInputs(dis){ document.getElementById("sendBtn").disabled = dis; document.getElementById("playerInput").disabled = dis; }
+document.getElementById("sendBtn").onclick = ()=> sendPlayerAction(document.getElementById("playerInput").value.trim());
+document.getElementById("playerInput").addEventListener("keydown",e=>{ if(e.key==="Enter") sendPlayerAction(document.getElementById("playerInput").value.trim()); });
+document.getElementById("btnYear").onclick = ()=> { state.player.age++; appendSystem(`Você avançou um ano. Agora ${state.player.age}.`); sendPlayerAction(`${state.player.name} viveu mais um ano e descreva um acontecimento marcante.`); renderStats(); };
+document.getElementById("btnTrain").onclick = ()=> { const keys = Object.keys(state.player.stats); const k = keys[Math.floor(Math.random()*keys.length)]; state.player.stats[k] += 1; appendSystem(`Treinamento: +1 em ${k}.`); renderStats(); };
+document.getElementById("btnRest").onclick = ()=> { const heal = 10 + Math.floor(Math.random()*15); state.player.hp = Math.min(100, state.player.hp + heal); appendSystem(`Você descansou e recuperou ${heal} HP.`); renderStats(); };
+document.getElementById("btnExplore").onclick = ()=> { const found = Math.random()<0.6 ? {name:"Poção de cura",type:"heal",value:20} : {name:"Fragmento antigo",type:"artifact",power:2}; state.player.inventory.push(found); appendSystem(`Exploração: você encontrou ${found.name}.`); renderInventory(); sendPlayerAction(`${state.player.name} explora ${state.location} e encontra ${found.name}. Crie 2 opções de escolha.`); };
+document.getElementById("btnExamples").onclick = ()=> { document.getElementById("playerInput").value = 'Garuk: "Quem é você?"'; } ;
+document.querySelectorAll(".choice").forEach(el=>el.addEventListener("click", ()=> { const action = el.dataset.action; sendPlayerAction(action); }));
+renderStats(); renderInventory();
 appendSystem("Cena: você caminha pela Floresta de Elyndar e encontra Leo, um caçador. Digite algo para conversar/agir.");
 </script>
 </body>
