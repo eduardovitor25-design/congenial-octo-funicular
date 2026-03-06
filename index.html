@@ -5,16 +5,22 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Isekai Life — Chat Narrativo</title>
 <style>
-  :root{--accent:#67ff8d;--bg: #0f1113;--card:rgba(18,20,22,0.85);--muted:#cbd5e1}
+  :root{
+    --accent:#67ff8d;
+    --bg:#0f1113;
+    --card:rgba(18,20,22,0.88);
+    --muted:#cbd5e1;
+    --danger:#ff6b6b;
+  }
   html,body{height:100%;margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial;background:
     linear-gradient(180deg, rgba(0,0,0,0.6), rgba(0,0,0,0.8)),
     url('https://images.unsplash.com/photo-1503264116251-35a269479413?q=80&w=1600&auto=format&fit=crop') center/cover fixed;
     color:#e6eef3}
-  .wrap{width:100%;max-width:1100px;margin:28px auto;display:grid;grid-template-columns:300px 1fr 260px;gap:18px}
-  .card{background:var(--card);padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.03);box-shadow:0 8px 30px rgba(0,0,0,0.5)}
+  .wrap{max-width:1100px;margin:28px auto;padding:8px;display:grid;grid-template-columns:300px 1fr 260px;gap:16px}
+  .card{background:var(--card);padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.03);box-shadow:0 8px 30px rgba(0,0,0,0.45)}
   h1{margin:0 0 8px 0;font-weight:600}
-  .small{font-size:13px;color:rgba(230,238,243,0.86)}
-  .stat{margin:8px 0}
+  .muted{font-size:13px;color:rgba(230,238,243,0.85)}
+  .stat{margin:10px 0}
   .bar{height:10px;background:rgba(255,255,255,0.06);border-radius:999px;overflow:hidden}
   .fill{height:100%;background:linear-gradient(90deg,var(--accent),#2fe4b8);width:40%}
   .buttons{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
@@ -23,33 +29,37 @@
   #story{height:66vh;overflow:auto;padding:12px;background:linear-gradient(180deg,rgba(0,0,0,0.12),rgba(0,0,0,0.02));border-radius:8px}
   .msg{margin-bottom:12px}
   .who{font-weight:700;margin-bottom:6px}
-  .text{white-space:pre-wrap;line-height:1.4}
+  .text{white-space:pre-wrap;line-height:1.45}
   .inputRow{display:flex;gap:8px;margin-top:12px}
   input[type="text"]{flex:1;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:rgba(255,255,255,0.02);color:inherit}
   .choice{display:inline-block;background:rgba(255,255,255,0.04);padding:6px 10px;border-radius:999px;margin:6px 6px 0 0;cursor:pointer;font-size:13px}
   #version{position:fixed;right:18px;bottom:14px;color:rgba(255,255,255,0.55);font-size:12px}
-  .muted{opacity:0.75;font-size:13px}
+  .spinner{display:inline-block;width:18px;height:18px;border-radius:50%;border:2px solid rgba(255,255,255,0.12);border-top-color:var(--accent);animation:spin 1s linear infinite;vertical-align:middle}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  @media (max-width:980px){ .wrap{grid-template-columns:1fr; padding:12px} .card{margin-bottom:12px} #story{height:50vh} }
 </style>
 </head>
 <body>
 <div class="wrap">
   <!-- LEFT -->
-  <div class="card">
+  <div class="card" aria-label="status">
     <h1>Isekai Life</h1>
-    <div class="small">Personagem: <strong id="playerName">Garuk</strong></div>
+    <div class="muted">Personagem: <strong id="playerName">Garuk</strong></div>
     <div class="stat">Idade: <strong id="age">10</strong></div>
     <div class="stat">Vida: <strong id="hp">100</strong></div>
     <div class="bar" aria-hidden><div id="hpFill" class="fill" style="width:100%"></div></div>
-    <div style="display:flex;gap:8px;margin-top:10px">
+
+    <div style="display:flex;gap:10px;margin-top:10px">
       <div style="flex:1"><div class="muted">Ouro</div><div id="gold">45</div></div>
       <div style="flex:1"><div class="muted">Reputação</div><div id="rep">0</div></div>
     </div>
+
     <hr style="opacity:0.06;margin:12px 0">
     <div class="muted">Atributos</div>
-    <div class="small">Força <span id="s_str">40</span></div><div class="bar"><div id="fill_str" class="fill" style="width:40%"></div></div>
-    <div class="small">Inteligência <span id="s_int">60</span></div><div class="bar"><div id="fill_int" class="fill" style="width:60%"></div></div>
-    <div class="small">Carisma <span id="s_chr">30</span></div><div class="bar"><div id="fill_chr" class="fill" style="width:30%"></div></div>
-    <div class="small">Sorte <span id="s_lck">50</span></div><div class="bar"><div id="fill_lck" class="fill" style="width:50%"></div></div>
+    <div class="muted" style="margin-top:8px">Força <span id="s_str">40</span></div><div class="bar"><div id="fill_str" class="fill" style="width:40%"></div></div>
+    <div class="muted" style="margin-top:8px">Inteligência <span id="s_int">60</span></div><div class="bar"><div id="fill_int" class="fill" style="width:60%"></div></div>
+    <div class="muted" style="margin-top:8px">Carisma <span id="s_chr">30</span></div><div class="bar"><div id="fill_chr" class="fill" style="width:30%"></div></div>
+    <div class="muted" style="margin-top:8px">Sorte <span id="s_lck">50</span></div><div class="bar"><div id="fill_lck" class="fill" style="width:50%"></div></div>
 
     <div class="buttons" style="margin-top:12px">
       <button id="btnYear" class="primary">Avançar Ano</button>
@@ -60,11 +70,11 @@
 
     <hr style="opacity:0.06;margin:12px 0">
     <div class="muted">Inventário</div>
-    <div id="inventoryArea" style="margin-top:8px;max-height:22vh;overflow:auto"></div>
+    <div id="inventoryArea" style="margin-top:8px;max-height:20vh;overflow:auto"></div>
   </div>
 
   <!-- CENTER -->
-  <div class="card" style="display:flex;flex-direction:column">
+  <div class="card" role="main" aria-live="polite">
     <div style="display:flex;justify-content:space-between;align-items:center">
       <div><div class="muted">Local: <strong id="location">Floresta de Elyndar</strong></div></div>
       <div class="muted">Modo IA: <span id="iaMode">API</span></div>
@@ -74,16 +84,16 @@
 
     <div style="margin-top:12px">
       <div class="inputRow">
-        <input id="playerInput" type="text" placeholder='Ex: Garuk: "Quem é você?"' maxlength="500" />
+        <input id="playerInput" type="text" placeholder='Ex: Garuk: "Quem é você?"' maxlength="700" />
         <button id="sendBtn" class="primary">Enviar</button>
         <button id="btnExamples">Ex</button>
       </div>
-      <div class="muted" style="margin-top:8px">Use linguagem natural — fale, aja ou descreva.</div>
+      <div class="muted" style="margin-top:8px">Use linguagem natural — descreva ações ou falas.</div>
     </div>
   </div>
 
   <!-- RIGHT -->
-  <div class="card">
+  <div class="card" aria-label="ações rápidas">
     <div class="muted">Ações rápidas</div>
     <div style="margin-top:8px">
       <div class="choice" data-action='Garuk: "Quem é você?"'>Perguntar quem é</div>
@@ -103,20 +113,75 @@
 <div id="version">Isekai Life v4.0</div>
 
 <script>
-/* ---------- Config ---------- */
-const API_PATH = "/api/narrate"; // servidor (Render) expõe essa rota
+/* =========================
+   CONFIG / Estado inicial
+   ========================= */
+const API_PATH = "/api/narrate";
 let sessionId = localStorage.getItem("isekai_session") || ("s_"+Math.random().toString(36).slice(2,10));
 localStorage.setItem("isekai_session", sessionId);
 
-/* ---------- State ---------- */
+/* Estado do jogo */
 const state = {
   player: { name:"Garuk", age:10, hp:100, gold:45, reputation:0, stats:{ strength:4, intelligence:6, charisma:3, luck:5, mana:2 }, inventory:[{name:"Espada velha",power:3}] },
   location: "Floresta de Elyndar",
   npcs: [{name:"Leo", role:"caçador", attitude:"desconfiado"}],
-  story: []
+  story: [] // array {who,text,time}
 };
 
-/* ---------- UI helpers ---------- */
+/* =========================
+   DIALOGUE MANAGER
+   - centraliza memória, personalidade NPCs,
+   - converte histórico para prompt curto,
+   - fornece fallback melhorado.
+   ========================= */
+class DialogueManager {
+  constructor(state){
+    this.state = state;
+    // personas simples; podem evoluir em servidor
+    this.personas = { Leo: { role:"caçador", tone:"desconfiado", memory:[] } };
+  }
+
+  // compact history (últimos n eventos) para enviar ao modelo
+  compactContext(n = 12){
+    const recent = this.state.story.slice(-n).map(s => `${s.who}: ${s.text}`);
+    return { recent, player: { name:this.state.player.name, hp:this.state.player.hp }, location: this.state.location, npcs: this.state.npcs };
+  }
+
+  // local fallback generator mais "conversacional"
+  localFallback(action){
+    const a = (action||"").toLowerCase();
+    if(a.includes("quem") || a.includes("quem é")) {
+      return { narrative: 'Leo ergue a sobrancelha. "Sou Leo, caçador desta floresta. O que busca?"', choices:[{text:"Pedir ajuda"},{text:"Atacar"}], updates:{} };
+    }
+    if(/roubar|atacar|assaltar/.test(a)){
+      const dmg = Math.floor(Math.random()*18)+4;
+      return { narrative:`Leo reage rápido. Você perde ${dmg} HP no confronto.`, choices:[{text:"Desculpar-se"},{text:"Fugir"}], updates:{hp:-dmg} };
+    }
+    // default
+    const templates = [
+      "Leo aponta para trilhas recentes: \"Algo passou por aqui. Devemos investigar?\"",
+      "Uma brisa fria passa. Leo comenta algo sobre ruínas ao norte; olhos brilhando com curiosidade.",
+      "Leo pega a lança: \"Se for seguir, fique atento às armadilhas.\""
+    ];
+    return { narrative: templates[Math.floor(Math.random()*templates.length)], choices:[{text:"Investigar"},{text:"Seguir Leo"}], updates:{} };
+  }
+}
+
+/* =========================
+   UI helpers
+   ========================= */
+function escapeHtml(s){ return (s+"").replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;'}[c])); }
+function appendMessage(who, text){
+  state.story.push({ who, text, time: Date.now() });
+  const s = document.getElementById("story");
+  const block = document.createElement("div"); block.className = "msg";
+  block.innerHTML = `<div class="who">${escapeHtml(who)}</div><div class="text">${escapeHtml(text)}</div>`;
+  s.appendChild(block); s.scrollTop = s.scrollHeight;
+}
+function appendSystem(text){ appendMessage("Narrador", text); }
+function appendPlayer(text){ appendMessage(state.player.name, text); }
+function appendNPC(name, text){ appendMessage(name, text); }
+
 function renderStats(){
   document.getElementById("playerName").textContent = state.player.name;
   document.getElementById("age").textContent = state.player.age;
@@ -131,93 +196,116 @@ function renderStats(){
   document.getElementById("location").textContent = state.location;
 }
 function renderInventory(){
-  const node = document.getElementById("inventoryArea"); node.innerHTML = "";
-  if(state.player.inventory.length===0){ node.innerHTML = "<div class='muted'>vazio</div>"; return; }
-  state.player.inventory.forEach((it,idx)=>{
-    const div = document.createElement("div"); div.className = "small"; div.innerHTML = `${escapeHtml(it.name)} ${it.power?("• pwr:"+it.power):""} <button style="float:right" onclick="useItem(${idx})">usar</button>`; node.appendChild(div);
+  const n = document.getElementById("inventoryArea"); n.innerHTML = "";
+  if(state.player.inventory.length===0){ n.innerHTML = "<div class='muted'>vazio</div>"; return; }
+  state.player.inventory.forEach((it, idx)=>{
+    const div = document.createElement("div");
+    div.className = "muted";
+    const btn = `<button style="float:right" onclick="useItem(${idx})">usar</button>`;
+    div.innerHTML = `${escapeHtml(it.name)} ${it.power ? "• pwr:"+escapeHtml(it.power) : ""} ${btn}`;
+    n.appendChild(div);
   });
 }
-function appendMessage(who, text){ state.story.push({who,text,time:Date.now()}); const s=document.getElementById("story"); const b=document.createElement("div"); b.className="msg"; b.innerHTML=`<div class="who">${escapeHtml(who)}</div><div class="text">${escapeHtml(text)}</div>`; s.appendChild(b); s.scrollTop = s.scrollHeight; }
-function appendSystem(text){ appendMessage("Narrador", text); }
-function appendPlayer(text){ appendMessage(state.player.name, text); }
-function appendNPC(name,text){ appendMessage(name, text); }
-function escapeHtml(s){ return (s+"").replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[c])); }
-
-/* ---------- Actions ---------- */
 window.useItem = function(idx){
   const it = state.player.inventory[idx]; if(!it) return;
   if(it.type === "heal" || it.name.toLowerCase().includes("poção")){ state.player.hp = Math.min(100, state.player.hp + (it.value||20)); state.player.inventory.splice(idx,1); appendSystem(`Você usou ${it.name} e recuperou vida.`); }
   else appendSystem(`Você examina ${it.name}.`);
   renderStats(); renderInventory();
-};
-
-function localNarrativeModel(action){
-  const a = (action||"").toLowerCase();
-  if(a.includes("quem") || a.includes("quem é")) return { narrative:'Leo: "Sou Leo, caçador desta floresta. Por que pergunta?"', choices:[{text:"Pedir ajuda"},{text:"Atacar"}], updates:{} };
-  if(a.includes("roubar") || a.includes("atacar")){ const dmg = Math.floor(Math.random()*18)+4; return { narrative:`Conflito: você tenta ação violenta e perde ${dmg} HP.`, choices:[{text:"Desculpar-se"},{text:"Fugir"}], updates:{hp:-dmg} }; }
-  const templates = ["A brisa sussurra entre as árvores. Leo observa e comenta sobre ruínas antigas ao norte.", "Leo aponta para marcas de garras: \"Algo passou por aqui.\"", "Leo pega uma corda e oferece: \"Se for explorar, leve isto.\""];
-  return { narrative: templates[Math.floor(Math.random()*templates.length)], choices:[{text:"Investigar marcas de garras"},{text:"Seguir Leo"}], updates:{} };
 }
 
-/* ---------- Network: send action to server or fallback ---------- */
+/* =========================
+   Rede: enviar ação ao servidor com timeout e fallback
+   ========================= */
+const DM = new DialogueManager(state);
+
+function disableInputs(dis){
+  document.getElementById("sendBtn").disabled = dis;
+  document.getElementById("playerInput").disabled = dis;
+  const spinnerEl = document.getElementById("sendSpinner");
+  if(dis){
+    if(!spinnerEl){ const sp = document.createElement("span"); sp.id = "sendSpinner"; sp.className = "spinner"; document.getElementById("sendBtn").appendChild(sp); }
+  } else { const sp = document.getElementById("sendSpinner"); if(sp) sp.remove(); }
+}
+
 async function sendPlayerAction(actionText){
   if(!actionText) return;
-  const input = document.getElementById("playerInput");
-  input.value = "";
   appendPlayer(actionText);
   const force = document.getElementById("forceFallback").checked;
   disableInputs(true);
   try{
     if(force){
-      const out = localNarrativeModel(actionText);
-      applyNarrative(out);
-      return;
+      const out = DM.localFallback(actionText); applyNarrative(out); return;
     }
-    const payload = { sessionId, action: actionText, context: { player: state.player, location: state.location, npcs: state.npcs, recent: state.story.slice(-12) } };
-    const res = await fetch(API_PATH, { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify(payload) });
-    if(!res.ok) throw new Error("api-error");
+    // payload with compacted context
+    const payload = { sessionId, action: actionText, context: DM.compactContext(12) };
+    // fetch with timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(()=> controller.abort(), 12000); // 12s timeout
+    const res = await fetch(API_PATH, { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify(payload), signal: controller.signal });
+    clearTimeout(timeoutId);
+    if(!res.ok){
+      console.warn("API returned non-200, using fallback", res.status);
+      const out = DM.localFallback(actionText); applyNarrative(out); return;
+    }
     const data = await res.json();
     applyNarrative(data);
   } catch(err){
-    console.warn("API fail -> fallback", err);
-    const out = localNarrativeModel(actionText);
+    console.warn("Network/API error -> fallback", err);
+    const out = DM.localFallback(actionText);
     applyNarrative(out);
-  } finally { disableInputs(false); renderStats(); renderInventory(); }
+  } finally {
+    disableInputs(false);
+    renderStats(); renderInventory();
+    // persist some history locally (last 40 events)
+    try { localStorage.setItem("isekai_history", JSON.stringify(state.story.slice(-40))); } catch(e){}
+  }
 }
 
+/* Apply narrative safely */
 function applyNarrative(data){
-  // expected: { narrative, npc?, choices[], updates? }
   if(typeof data === "string") data = { narrative: data };
   if(data.narrative) appendSystem(data.narrative);
   if(data.npc) appendNPC(data.npc.name, data.npc.text);
   if(Array.isArray(data.choices) && data.choices.length){
-    // show choices as clickable chips
-    const s=document.getElementById("story"); const block=document.createElement("div"); block.className="msg";
-    const inner=document.createElement("div"); inner.className="text"; data.choices.forEach(c=>{
-      const ch=document.createElement("span"); ch.className="choice"; ch.textContent = c.text; ch.onclick = ()=> sendPlayerAction(c.text);
+    const s = document.getElementById("story"); const block = document.createElement("div"); block.className = "msg";
+    block.innerHTML = `<div class="who">Escolhas</div>`; const inner = document.createElement("div"); inner.className = "text";
+    data.choices.forEach(c => {
+      const ch = document.createElement("span"); ch.className = "choice"; ch.textContent = c.text; ch.onclick = ()=> sendPlayerAction(c.text);
       inner.appendChild(ch);
     });
-    block.innerHTML = `<div class="who">Escolhas</div>`; block.appendChild(inner); s.appendChild(block); s.scrollTop = s.scrollHeight;
+    block.appendChild(inner); s.appendChild(block); s.scrollTop = s.scrollHeight;
   }
   if(data.updates){
     const u = data.updates;
-    if(typeof u.hp === "number") state.player.hp = Math.max(0, Math.min(200, state.player.hp + u.hp));
-    if(typeof u.gold === "number") state.player.gold += u.gold;
-    if(u.inventoryAdd) state.player.inventory.push(u.inventoryAdd);
-    if(u.statChanges) Object.entries(u.statChanges).forEach(([k,v])=>{ if(state.player.stats[k]!==undefined) state.player.stats[k]+=v; });
+    if(typeof u.hp === "number"){ state.player.hp = Math.max(0, Math.min(200, state.player.hp + u.hp)); }
+    if(typeof u.gold === "number"){ state.player.gold += u.gold; }
+    if(u.inventoryAdd && typeof u.inventoryAdd.name === "string"){ state.player.inventory.push(u.inventoryAdd); }
+    if(u.statChanges && typeof u.statChanges === "object"){ Object.entries(u.statChanges).forEach(([k,v])=>{ if(typeof v === "number" && state.player.stats[k] !== undefined) state.player.stats[k] += v; }); }
   }
 }
 
-/* ---------- UI helpers ---------- */
-function disableInputs(dis){ document.getElementById("sendBtn").disabled = dis; document.getElementById("playerInput").disabled = dis; }
-document.getElementById("sendBtn").onclick = ()=> sendPlayerAction(document.getElementById("playerInput").value.trim());
-document.getElementById("playerInput").addEventListener("keydown",e=>{ if(e.key==="Enter") sendPlayerAction(document.getElementById("playerInput").value.trim()); });
-document.getElementById("btnYear").onclick = ()=> { state.player.age++; appendSystem(`Você avançou um ano. Agora ${state.player.age}.`); sendPlayerAction(`${state.player.name} viveu mais um ano e descreva um acontecimento marcante.`); renderStats(); };
+/* =========================
+   Eventos UI
+   ========================= */
+document.getElementById("sendBtn").onclick = ()=> {
+  const txt = document.getElementById("playerInput").value.trim(); if(!txt) return;
+  document.getElementById("playerInput").value = "";
+  sendPlayerAction(txt);
+};
+document.getElementById("playerInput").addEventListener("keydown", e => { if(e.key === "Enter") { e.preventDefault(); document.getElementById("sendBtn").click(); }});
+document.getElementById("btnYear").onclick = ()=> { state.player.age++; appendSystem(`Você avança um ano. Agora ${state.player.age}.`); sendPlayerAction(`${state.player.name} viveu mais um ano. Descreve um acontecimento marcante.`); renderStats(); };
 document.getElementById("btnTrain").onclick = ()=> { const keys = Object.keys(state.player.stats); const k = keys[Math.floor(Math.random()*keys.length)]; state.player.stats[k] += 1; appendSystem(`Treinamento: +1 em ${k}.`); renderStats(); };
 document.getElementById("btnRest").onclick = ()=> { const heal = 10 + Math.floor(Math.random()*15); state.player.hp = Math.min(100, state.player.hp + heal); appendSystem(`Você descansou e recuperou ${heal} HP.`); renderStats(); };
-document.getElementById("btnExplore").onclick = ()=> { const found = Math.random()<0.6 ? {name:"Poção de cura",type:"heal",value:20} : {name:"Fragmento antigo",type:"artifact",power:2}; state.player.inventory.push(found); appendSystem(`Exploração: você encontrou ${found.name}.`); renderInventory(); sendPlayerAction(`${state.player.name} explora ${state.location} e encontra ${found.name}. Crie 2 opções de escolha.`); };
-document.getElementById("btnExamples").onclick = ()=> { document.getElementById("playerInput").value = 'Garuk: "Quem é você?"'; } ;
-document.querySelectorAll(".choice").forEach(el=>el.addEventListener("click", ()=> { const action = el.dataset.action; sendPlayerAction(action); }));
+document.getElementById("btnExplore").onclick = ()=> { const found = Math.random()<0.6 ? {name:"Poção de cura",type:"heal",value:20} : {name:"Fragmento antigo",type:"artifact",power:2}; state.player.inventory.push(found); appendSystem(`Exploração: você encontrou ${found.name}.`); renderInventory(); sendPlayerAction(`${state.player.name} explora ${state.location} e encontra ${found.name}. Crie 2 opções.`); };
+document.getElementById("btnExamples").onclick = ()=> { document.getElementById("playerInput").value = 'Garuk: "Quem é você?"'; };
+document.querySelectorAll(".choice").forEach(el => el.addEventListener("click", ()=> { const action = el.dataset.action; sendPlayerAction(action); }));
+
+/* Load persisted history (if any) */
+try{
+  const h = JSON.parse(localStorage.getItem("isekai_history") || "[]");
+  if(Array.isArray(h) && h.length){ h.forEach(m=> appendMessage(m.who,m.text)); state.story = h.slice(); }
+} catch(e){ /* ignore */ }
+
 renderStats(); renderInventory();
 appendSystem("Cena: você caminha pela Floresta de Elyndar e encontra Leo, um caçador. Digite algo para conversar/agir.");
 </script>
