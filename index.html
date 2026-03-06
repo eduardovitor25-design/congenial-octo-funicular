@@ -7,129 +7,63 @@
 <style>
 
 body{
-
 margin:0;
-
 font-family:system-ui;
-
 background:
 linear-gradient(rgba(0,0,0,0.65),rgba(0,0,0,0.85)),
-url("https://images.unsplash.com/photo-1503264116251-35a269479413");
-
+url("https://images.unsplash.com/photo-1519681393784-d120267933ba");
 background-size:cover;
-
-background-attachment:fixed;
-
 color:white;
-
 display:flex;
-
 justify-content:center;
-
 padding:40px;
-
 }
 
 #game{
-
-width:720px;
-
+width:760px;
 }
 
 .card{
-
-background:rgba(20,20,20,0.75);
-
-backdrop-filter:blur(6px);
-
-border-radius:12px;
-
+background:rgba(25,25,25,0.8);
 padding:20px;
-
+border-radius:12px;
 margin-bottom:14px;
-
-border:1px solid rgba(255,255,255,0.08);
-
-box-shadow:0 8px 20px rgba(0,0,0,0.6);
-
-}
-
-h1{
-
-font-weight:300;
-
-letter-spacing:1px;
-
+border:1px solid rgba(255,255,255,0.07);
 }
 
 button{
-
-background:#2d2d2d;
-
+background:#2e2e2e;
 border:none;
-
 padding:10px 14px;
-
 border-radius:6px;
-
 color:white;
-
 margin:4px;
-
 cursor:pointer;
-
-transition:0.2s;
-
 }
 
 button:hover{
-
-background:#3e3e3e;
-
+background:#444;
 }
 
 .bar{
-
 height:8px;
-
 background:#333;
-
 border-radius:4px;
-
-margin-bottom:8px;
-
+margin-bottom:6px;
 }
 
 .fill{
-
 height:8px;
-
 background:#67ff8d;
-
 border-radius:4px;
-
-}
-
-.stat{
-
-font-size:12px;
-
-opacity:0.8;
-
 }
 
 #version{
-
 position:fixed;
-
 bottom:8px;
-
 right:12px;
-
 opacity:0.6;
-
 font-size:12px;
-
 }
 
 </style>
@@ -138,94 +72,60 @@ font-size:12px;
 <body>
 
 <div id="game"></div>
-
-<div id="version">version 2.0</div>
+<div id="version">Isekai Life v3.0</div>
 
 <script>
 
 let player = {
 
 name:"Arion",
-
 age:0,
-
 class:"",
-
 hp:100,
-
-gold:10,
-
+gold:20,
+reputation:0,
 memory:0,
 
 stats:{
-
 strength:5,
-
 intelligence:5,
-
 charisma:5,
-
 luck:5,
-
 mana:3
-
 },
 
-inventory:[]
+inventory:[],
+relationships:[],
+job:null
 
 }
 
 const classes=[
-
 "Camponês",
-
-"Filho de ferreiro",
-
 "Mercador",
-
+"Filho de ferreiro",
 "Nobre menor",
-
 "Órfão"
-
 ]
 
 const items=[
-
-{name:"Espada velha",power:3},
-
-{name:"Adaga",power:2},
-
-{name:"Livro antigo",power:2},
-
-{name:"Anel mágico",power:4},
-
-{name:"Poção de cura",heal:20}
-
+{name:"Espada",type:"weapon",power:5},
+{name:"Adaga",type:"weapon",power:3},
+{name:"Poção",type:"heal",value:20},
+{name:"Livro mágico",type:"magic",power:3}
 ]
 
 function rand(min,max){
-
 return Math.floor(Math.random()*(max-min+1))+min
-
 }
 
 function start(){
 
 player.class=classes[rand(0,classes.length-1)]
 
-player.stats.strength=rand(3,7)
-
-player.stats.intelligence=rand(3,7)
-
-player.stats.charisma=rand(3,7)
-
-player.stats.luck=rand(3,7)
-
-player.stats.mana=rand(1,5)
-
 render()
 
-event("Você reencarnou no mundo de Elyndar.")
+event("Você reencarnou no mundo de Elyndar como "+player.class)
 
 }
 
@@ -241,27 +141,31 @@ ${player.name} • idade ${player.age} • ${player.class}
 
 <br><br>
 
-❤️ Vida: ${player.hp}
+❤️ Vida ${player.hp}
 
 <br>
 
-💰 Ouro: ${player.gold}
+💰 Ouro ${player.gold}
+
+<br>
+
+⭐ Reputação ${player.reputation}
 
 <br><br>
 
-<div class="stat">Força</div>
+Força
 <div class="bar"><div class="fill" style="width:${player.stats.strength*10}%"></div></div>
 
-<div class="stat">Inteligência</div>
+Inteligência
 <div class="bar"><div class="fill" style="width:${player.stats.intelligence*10}%"></div></div>
 
-<div class="stat">Carisma</div>
+Carisma
 <div class="bar"><div class="fill" style="width:${player.stats.charisma*10}%"></div></div>
 
-<div class="stat">Sorte</div>
+Sorte
 <div class="bar"><div class="fill" style="width:${player.stats.luck*10}%"></div></div>
 
-<div class="stat">Mana</div>
+Mana
 <div class="bar"><div class="fill" style="width:${player.stats.mana*10}%"></div></div>
 
 </div>
@@ -270,9 +174,13 @@ ${player.name} • idade ${player.age} • ${player.class}
 
 <button onclick="nextYear()">Avançar Ano</button>
 
-<button onclick="train()">Treinar</button>
+<button onclick="explore()">Explorar</button>
 
-<button onclick="showInventory()">Inventário</button>
+<button onclick="work()">Trabalhar</button>
+
+<button onclick="social()">Social</button>
+
+<button onclick="inventory()">Inventário</button>
 
 <button onclick="rest()">Descansar</button>
 
@@ -286,12 +194,10 @@ ${player.name} • idade ${player.age} • ${player.class}
 
 function event(text,choices=[]){
 
-let html=`<p>${text}</p>`
+let html="<p>"+text+"</p>"
 
 choices.forEach(c=>{
-
 html+=`<button onclick="${c.action}">${c.text}</button>`
-
 })
 
 document.getElementById("event").innerHTML=html
@@ -302,47 +208,91 @@ function nextYear(){
 
 player.age++
 
-procedural()
+lifeEvent()
 
 render()
 
 }
 
-function procedural(){
+function lifeEvent(){
 
-let roll=rand(1,100)
+let r=rand(1,100)
 
-if(roll<20) findItem()
-
-else if(roll<40) goldEvent()
-
-else if(roll<60) memoryEvent()
-
-else if(roll<75) monsterEvent()
-
-else if(roll<90) statEvent()
-
+if(r<25) romanceEvent()
+else if(r<45) adventureEvent()
+else if(r<60) goldEvent()
+else if(r<75) memoryEvent()
+else if(r<90) statEvent()
 else calmEvent()
 
 }
 
-function findItem(){
+function romanceEvent(){
 
-let item=items[rand(0,items.length-1)]
+let name="Lyria"
 
-player.inventory.push(item)
+event(
 
-event("Você encontrou "+item.name)
+"Você conheceu "+name+" no mercado.",
+
+[
+{text:"Conversar",action:"dateStart()"},
+{text:"Ignorar",action:"render()"}
+]
+
+)
+
+}
+
+function dateStart(){
+
+player.relationships.push("Lyria")
+
+player.reputation+=1
+
+event("Vocês começaram a se conhecer melhor.")
+
+}
+
+function adventureEvent(){
+
+let damage=rand(5,20)
+
+player.hp-=damage
+
+player.gold+=rand(5,25)
+
+if(player.hp<=0){
+
+event("Você morreu em uma aventura... renascendo.")
+
+setTimeout(start,2000)
+
+return
+
+}
+
+event("Você enfrentou um monstro e perdeu "+damage+" de vida.")
 
 }
 
 function goldEvent(){
 
-let g=rand(5,20)
+let g=rand(10,30)
 
 player.gold+=g
 
-event("Você encontrou "+g+" moedas.")
+event("Você fez um bom negócio e ganhou "+g+" moedas.")
+
+}
+
+function memoryEvent(){
+
+player.memory++
+
+player.stats.intelligence++
+
+event("Memórias do mundo moderno surgem... você tem uma nova ideia.")
 
 }
 
@@ -350,11 +300,11 @@ function statEvent(){
 
 let s=["strength","intelligence","charisma","luck"]
 
-let chosen=s[rand(0,s.length-1)]
+let stat=s[rand(0,s.length-1)]
 
-player.stats[chosen]+=1
+player.stats[stat]++
 
-event("Você melhorou "+chosen)
+event("Sua habilidade de "+stat+" melhorou.")
 
 }
 
@@ -364,75 +314,43 @@ event("Um ano tranquilo se passou.")
 
 }
 
-function memoryEvent(){
+function explore(){
 
-if(rand(1,100)<60){
+let item=items[rand(0,items.length-1)]
 
-player.memory++
+player.inventory.push(item)
 
-player.stats.intelligence++
-
-event("Memórias do mundo moderno voltam. Você tem uma nova ideia.")
-
-}else{
-
-event("Você quase lembra algo do outro mundo.")
+event("Você encontrou "+item.name)
 
 }
 
+function work(){
+
+let income=rand(10,25)
+
+player.gold+=income
+
+event("Você trabalhou e ganhou "+income+" moedas.")
+
 }
 
-function monsterEvent(){
+function social(){
 
-let damage=rand(5,20)
+if(player.relationships.length==0){
 
-player.hp-=damage
-
-if(player.hp<=0){
-
-event("Você morreu em combate... reiniciando.")
-
-setTimeout(start,2000)
+event("Você não tem muitos amigos ainda.")
 
 return
 
 }
 
-event("Você lutou contra um monstro e perdeu "+damage+" de vida.")
-
-}
-
-function train(){
-
-event(
-
-"O que deseja treinar?",
-
-[
-
-{text:"Força",action:"trainStat('strength')"},
-
-{text:"Inteligência",action:"trainStat('intelligence')"},
-
-{text:"Mana",action:"trainStat('mana')"}
-
-]
-
-)
-
-}
-
-function trainStat(s){
-
-player.stats[s]+=1
-
-render()
+event("Você passou tempo com "+player.relationships[0])
 
 }
 
 function rest(){
 
-let heal=rand(10,25)
+let heal=rand(10,20)
 
 player.hp+=heal
 
@@ -442,7 +360,7 @@ event("Você descansou e recuperou "+heal+" de vida.")
 
 }
 
-function showInventory(){
+function inventory(){
 
 let text="<b>Inventário</b><br><br>"
 
@@ -453,9 +371,7 @@ text+="vazio"
 }else{
 
 player.inventory.forEach(i=>{
-
 text+=i.name+"<br>"
-
 })
 
 }
