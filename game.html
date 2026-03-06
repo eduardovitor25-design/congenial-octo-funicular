@@ -1,29 +1,28 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<title>Isekai Life</title>
+
+<title>Isekai Life 3.0</title>
 
 <style>
 
 body{
 background:#111;
 color:white;
-font-family:system-ui;
-padding:40px;
+font-family:Arial;
+padding:20px;
 }
 
 #story{
 height:400px;
 overflow:auto;
-background:#1a1a1a;
-padding:20px;
-border-radius:10px;
-margin-bottom:20px;
+border:1px solid #444;
+padding:10px;
+margin-bottom:10px;
 }
 
-input{
-width:70%;
+#input{
+width:80%;
 padding:10px;
 }
 
@@ -37,41 +36,55 @@ padding:10px;
 
 <body>
 
-<h1>Isekai Life</h1>
+<h2>Isekai Life</h2>
 
 <div id="story"></div>
 
-<input id="action" placeholder="O que seu personagem faz?">
-
+<input id="input" placeholder="Escreva sua ação..." />
 <button onclick="send()">Enviar</button>
 
 <script>
 
-const storyDiv = document.getElementById("story")
+let history = ""
+
+function add(text){
+
+const story = document.getElementById("story")
+
+story.innerHTML += "<p>"+text+"</p>"
+
+story.scrollTop = story.scrollHeight
+
+history += text + "\n"
+
+}
+
+add("Narrador: Você reencarna em um mundo desconhecido...")
 
 async function send(){
 
-const action = document.getElementById("action").value
+const input = document.getElementById("input")
 
-storyDiv.innerHTML += "<p><b>Você:</b> "+action+"</p>"
+const message = input.value
 
-const response = await fetch("https://SEU-SERVIDOR.onrender.com/story",{
+input.value=""
 
+add("<b>Garuk:</b> "+message)
+
+const res = await fetch("/ai",{
 method:"POST",
-
 headers:{
 "Content-Type":"application/json"
 },
-
 body:JSON.stringify({
-action:action
+message:message,
+history:history
+})
 })
 
-})
+const data = await res.json()
 
-const data = await response.json()
-
-storyDiv.innerHTML += "<p>"+data.text+"</p>"
+add("<b>Narrador:</b> "+data.reply)
 
 }
 
