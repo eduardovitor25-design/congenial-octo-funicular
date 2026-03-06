@@ -7,64 +7,129 @@
 <style>
 
 body{
-background:#111;
-color:#eaeaea;
+
+margin:0;
+
 font-family:system-ui;
+
+background:
+linear-gradient(rgba(0,0,0,0.65),rgba(0,0,0,0.85)),
+url("https://images.unsplash.com/photo-1503264116251-35a269479413");
+
+background-size:cover;
+
+background-attachment:fixed;
+
+color:white;
+
 display:flex;
+
 justify-content:center;
+
 padding:40px;
+
 }
 
 #game{
-width:700px;
+
+width:720px;
+
 }
 
 .card{
-background:#1b1b1b;
+
+background:rgba(20,20,20,0.75);
+
+backdrop-filter:blur(6px);
+
+border-radius:12px;
+
 padding:20px;
-border-radius:8px;
-margin-bottom:15px;
+
+margin-bottom:14px;
+
+border:1px solid rgba(255,255,255,0.08);
+
+box-shadow:0 8px 20px rgba(0,0,0,0.6);
+
 }
 
 h1{
+
 font-weight:300;
+
+letter-spacing:1px;
+
 }
 
 button{
-background:#2b2b2b;
+
+background:#2d2d2d;
+
 border:none;
-color:white;
-padding:10px 15px;
-margin:4px;
+
+padding:10px 14px;
+
 border-radius:6px;
+
+color:white;
+
+margin:4px;
+
 cursor:pointer;
+
+transition:0.2s;
+
 }
 
 button:hover{
-background:#3b3b3b;
+
+background:#3e3e3e;
+
 }
 
 .bar{
+
 height:8px;
+
 background:#333;
-margin-bottom:6px;
+
 border-radius:4px;
+
+margin-bottom:8px;
+
 }
 
 .fill{
+
 height:8px;
-background:#6be675;
+
+background:#67ff8d;
+
 border-radius:4px;
+
 }
 
 .stat{
+
 font-size:12px;
-opacity:0.7;
+
+opacity:0.8;
+
 }
 
-.small{
-font-size:12px;
+#version{
+
+position:fixed;
+
+bottom:8px;
+
+right:12px;
+
 opacity:0.6;
+
+font-size:12px;
+
 }
 
 </style>
@@ -74,77 +139,93 @@ opacity:0.6;
 
 <div id="game"></div>
 
+<div id="version">version 2.0</div>
+
 <script>
 
 let player = {
 
-name:"",
+name:"Arion",
 
 age:0,
 
 class:"",
 
+hp:100,
+
 gold:10,
 
+memory:0,
+
 stats:{
+
 strength:5,
+
 intelligence:5,
+
 charisma:5,
+
 luck:5,
+
 mana:3
+
 },
 
-inventory:[],
-
-memoryLevel:0
+inventory:[]
 
 }
 
-const items = [
+const classes=[
 
-{name:"Espada velha",type:"weapon",power:2},
-{name:"Adaga",type:"weapon",power:1},
-{name:"Livro antigo",type:"knowledge",power:2},
-{name:"Anel estranho",type:"artifact",power:3},
-{name:"Poção misteriosa",type:"potion",power:2}
+"Camponês",
+
+"Filho de ferreiro",
+
+"Mercador",
+
+"Nobre menor",
+
+"Órfão"
+
+]
+
+const items=[
+
+{name:"Espada velha",power:3},
+
+{name:"Adaga",power:2},
+
+{name:"Livro antigo",power:2},
+
+{name:"Anel mágico",power:4},
+
+{name:"Poção de cura",heal:20}
 
 ]
 
 function rand(min,max){
+
 return Math.floor(Math.random()*(max-min+1))+min
+
 }
 
 function start(){
 
-player.name="Arion"
-
-player.age=0
-
-player.class=randomClass()
+player.class=classes[rand(0,classes.length-1)]
 
 player.stats.strength=rand(3,7)
+
 player.stats.intelligence=rand(3,7)
+
 player.stats.charisma=rand(3,7)
+
 player.stats.luck=rand(3,7)
+
 player.stats.mana=rand(1,5)
 
 render()
 
 event("Você reencarnou no mundo de Elyndar.")
-
-}
-
-function randomClass(){
-
-let c=[
-"Camponês",
-"Filho de ferreiro",
-"Filho de mercador",
-"Nobre menor",
-"Órfão"
-]
-
-return c[rand(0,c.length-1)]
 
 }
 
@@ -156,11 +237,17 @@ document.getElementById("game").innerHTML=`
 
 <h1>Isekai Life</h1>
 
-<div class="small">
 ${player.name} • idade ${player.age} • ${player.class}
-</div>
+
+<br><br>
+
+❤️ Vida: ${player.hp}
 
 <br>
+
+💰 Ouro: ${player.gold}
+
+<br><br>
 
 <div class="stat">Força</div>
 <div class="bar"><div class="fill" style="width:${player.stats.strength*10}%"></div></div>
@@ -177,17 +264,17 @@ ${player.name} • idade ${player.age} • ${player.class}
 <div class="stat">Mana</div>
 <div class="bar"><div class="fill" style="width:${player.stats.mana*10}%"></div></div>
 
-<br>
-
-Ouro: ${player.gold}
-
 </div>
 
 <div class="card">
 
-<button onclick="nextYear()">Avançar ano</button>
+<button onclick="nextYear()">Avançar Ano</button>
+
+<button onclick="train()">Treinar</button>
+
 <button onclick="showInventory()">Inventário</button>
-<button onclick="training()">Treinar</button>
+
+<button onclick="rest()">Descansar</button>
 
 </div>
 
@@ -202,7 +289,9 @@ function event(text,choices=[]){
 let html=`<p>${text}</p>`
 
 choices.forEach(c=>{
+
 html+=`<button onclick="${c.action}">${c.text}</button>`
+
 })
 
 document.getElementById("event").innerHTML=html
@@ -213,50 +302,27 @@ function nextYear(){
 
 player.age++
 
-proceduralEvent()
+procedural()
 
 render()
 
 }
 
-function proceduralEvent(){
-
-let score =
-player.stats.intelligence +
-player.stats.luck +
-player.memoryLevel
+function procedural(){
 
 let roll=rand(1,100)
 
-if(roll<25){
+if(roll<20) findItem()
 
-findItem()
+else if(roll<40) goldEvent()
 
-}
+else if(roll<60) memoryEvent()
 
-else if(roll<45){
+else if(roll<75) monsterEvent()
 
-goldEvent()
+else if(roll<90) statEvent()
 
-}
-
-else if(roll<65){
-
-isekaiMemory()
-
-}
-
-else if(roll<85){
-
-statEvent()
-
-}
-
-else{
-
-nothingEvent()
-
-}
+else calmEvent()
 
 }
 
@@ -266,26 +332,7 @@ let item=items[rand(0,items.length-1)]
 
 player.inventory.push(item)
 
-event(
-
-"Você encontrou: "+item.name,
-
-[
-{text:"Guardar",action:"render()"},
-{text:"Vender",action:`sellItem("${item.name}")`}
-]
-
-)
-
-}
-
-function sellItem(name){
-
-player.gold+=rand(5,15)
-
-player.inventory=player.inventory.filter(i=>i.name!=name)
-
-render()
+event("Você encontrou "+item.name)
 
 }
 
@@ -295,60 +342,80 @@ let g=rand(5,20)
 
 player.gold+=g
 
-event("Você ganhou "+g+" moedas.")
+event("Você encontrou "+g+" moedas.")
 
 }
 
 function statEvent(){
 
-let stats=["strength","intelligence","charisma","luck"]
+let s=["strength","intelligence","charisma","luck"]
 
-let s=stats[rand(0,stats.length-1)]
+let chosen=s[rand(0,s.length-1)]
 
-player.stats[s]+=1
+player.stats[chosen]+=1
 
-event("Você melhorou sua habilidade de "+s)
+event("Você melhorou "+chosen)
 
 }
 
-function isekaiMemory(){
+function calmEvent(){
 
-if(rand(1,100)<50){
+event("Um ano tranquilo se passou.")
 
-player.memoryLevel++
+}
+
+function memoryEvent(){
+
+if(rand(1,100)<60){
+
+player.memory++
 
 player.stats.intelligence++
 
-event(
-
-"Uma memória do mundo moderno retorna. Você tem uma nova ideia."
-
-)
+event("Memórias do mundo moderno voltam. Você tem uma nova ideia.")
 
 }else{
 
-event("Você quase lembra algo do outro mundo... mas desaparece.")
+event("Você quase lembra algo do outro mundo.")
 
 }
 
 }
 
-function nothingEvent(){
+function monsterEvent(){
 
-event("Um ano tranquilo se passa.")
+let damage=rand(5,20)
+
+player.hp-=damage
+
+if(player.hp<=0){
+
+event("Você morreu em combate... reiniciando.")
+
+setTimeout(start,2000)
+
+return
 
 }
 
-function training(){
+event("Você lutou contra um monstro e perdeu "+damage+" de vida.")
+
+}
+
+function train(){
 
 event(
 
 "O que deseja treinar?",
 
 [
+
 {text:"Força",action:"trainStat('strength')"},
+
 {text:"Inteligência",action:"trainStat('intelligence')"},
+
 {text:"Mana",action:"trainStat('mana')"}
+
 ]
 
 )
@@ -363,9 +430,21 @@ render()
 
 }
 
+function rest(){
+
+let heal=rand(10,25)
+
+player.hp+=heal
+
+if(player.hp>100) player.hp=100
+
+event("Você descansou e recuperou "+heal+" de vida.")
+
+}
+
 function showInventory(){
 
-let text="Inventário:<br><br>"
+let text="<b>Inventário</b><br><br>"
 
 if(player.inventory.length==0){
 
@@ -374,7 +453,9 @@ text+="vazio"
 }else{
 
 player.inventory.forEach(i=>{
+
 text+=i.name+"<br>"
+
 })
 
 }
