@@ -1,341 +1,341 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt">
 <head>
 <meta charset="UTF-8">
-<title>Crônicas de Eldoria — Rimlike Proto</title>
+<title>Isekai Life</title>
+
 <style>
 body{
-background:#0f0e0c;
-color:#e6dcc6;
-font-family:Georgia,serif;
-margin:0;
-display:flex;
-flex-direction:column;
-align-items:center;
+background:#1b1b1b;
+color:white;
+font-family:Arial;
+text-align:center;
 }
-h1{color:#c6a85a;margin:10px;}
-#game{
-display:flex;
-gap:20px;
+
+.container{
+width:600px;
+margin:auto;
+background:#2b2b2b;
+padding:20px;
+border-radius:10px;
 }
-#map{
-display:grid;
-grid-template-columns:repeat(20,32px);
-grid-template-rows:repeat(20,32px);
-gap:1px;
-background:#222;
-}
-.tile{
-width:32px;height:32px;
-display:flex;align-items:center;justify-content:center;
-font-size:18px;
-}
-.grass{background:#2c3e2c;}
-.tree{background:#1c2a1c;}
-.player{background:#c6a85a;}
-.enemy{background:#7a1f1f;}
-.item{background:#444;}
-#panel{
-width:260px;
-background:#1b1a16;
+
+button{
 padding:10px;
-border:1px solid #3a3528;
+margin:5px;
+border:none;
+border-radius:5px;
+background:#3c8cff;
+color:white;
+cursor:pointer;
 }
-#log{
-height:200px;
-overflow:auto;
-background:#0b0b0b;
-padding:6px;
+
+button:hover{
+background:#2a6adf;
+}
+
+.bar{
+height:15px;
+background:#444;
+margin:5px;
+border-radius:5px;
+}
+
+.fill{
+height:15px;
+background:#3cff8f;
+border-radius:5px;
+}
+
+.event{
+background:#333;
+padding:10px;
 margin-top:10px;
-font-size:13px;
+border-radius:5px;
 }
+
 .version{
 position:fixed;
 bottom:5px;
 right:10px;
-opacity:0.6;
-font-size:12px;
+font-size:10px;
+opacity:0.5;
 }
 </style>
 </head>
+
 <body>
 
-<h1>Crônicas de Eldoria</h1>
+<div class="container">
 
-<div id="game">
+<h1>Isekai Life</h1>
 
-<div id="map"></div>
-
-<div id="panel">
-<div>HP: <span id="hp"></span></div>
-<div>Força: <span id="str"></span></div>
-<div>Ouro: <span id="gold"></span></div>
-
-<hr>
-
-<div>Inventário:</div>
-<div id="inv"></div>
-
-<hr>
-
-<div>Controles:</div>
-<div>WASD ou Setas</div>
-
-<div id="log"></div>
-</div>
+<div id="game"></div>
 
 </div>
 
-<div class="version">proto 0.4</div>
+<div class="version">v1.0</div>
 
 <script>
 
-const size=20
-let map=[]
-let enemies=[]
-let items=[]
-
-let player={
-x:10,
-y:10,
-hp:100,
-str:5,
-gold:0,
-inv:[]
-}
-
-function log(t){
-let box=document.getElementById("log")
-box.innerHTML+=t+"<br>"
-box.scrollTop=box.scrollHeight
-}
-
-function createMap(){
-
-for(let y=0;y<size;y++){
-map[y]=[]
-for(let x=0;x<size;x++){
-
-let r=Math.random()
-
-if(r<0.1){
-map[y][x]="tree"
-}else{
-map[y][x]="grass"
-}
-
+let player = {
+nome:"",
+idade:0,
+classe:"",
+forca:0,
+inteligencia:0,
+carisma:0,
+sorte:0,
+mana:0,
+ouro:10,
+inventario:[],
+relacoes:{
+pai:50,
+mae:50
 }
 }
 
+function startGame(){
+
+document.getElementById("game").innerHTML=`
+
+<h2>Você morreu no mundo moderno...</h2>
+
+<p>Uma entidade oferece reencarnação em Elyndar.</p>
+
+<button onclick="reencarnar()">Reencarnar</button>
+
+`
 }
 
-function spawnEnemies(){
+function reencarnar(){
 
-for(let i=0;i<6;i++){
+let classes=["Camponês","Filho de Ferreiro","Filho de Mercador","Nobre Menor","Órfão"]
 
-enemies.push({
-x:Math.floor(Math.random()*size),
-y:Math.floor(Math.random()*size),
-hp:20
-})
+player.classe=classes[Math.floor(Math.random()*classes.length)]
 
-}
+player.idade=0
 
-}
+player.forca=rand(2,6)
+player.inteligencia=rand(2,6)
+player.carisma=rand(2,6)
+player.sorte=rand(2,6)
+player.mana=rand(1,5)
 
-function spawnItems(){
+player.nome="Arion"
 
-for(let i=0;i<5;i++){
-
-items.push({
-x:Math.floor(Math.random()*size),
-y:Math.floor(Math.random()*size),
-type:"gold"
-})
-
-}
-
-}
-
-function draw(){
-
-const mapDiv=document.getElementById("map")
-mapDiv.innerHTML=""
-
-for(let y=0;y<size;y++){
-for(let x=0;x<size;x++){
-
-let tile=document.createElement("div")
-tile.className="tile "+map[y][x]
-
-if(player.x===x && player.y===y){
-tile.className="tile player"
-tile.innerText="🙂"
-}
-
-enemies.forEach(e=>{
-if(e.x===x && e.y===y){
-tile.className="tile enemy"
-tile.innerText="🐺"
-}
-})
-
-items.forEach(i=>{
-if(i.x===x && i.y===y){
-tile.className="tile item"
-tile.innerText="💰"
-}
-})
-
-mapDiv.appendChild(tile)
-
-}
-}
-
-updatePanel()
+mostrarStatus()
 
 }
 
-function updatePanel(){
+function mostrarStatus(){
 
-document.getElementById("hp").innerText=player.hp
-document.getElementById("str").innerText=player.str
-document.getElementById("gold").innerText=player.gold
+document.getElementById("game").innerHTML=`
 
-let inv=document.getElementById("inv")
-inv.innerHTML=""
-player.inv.forEach(i=>{
-let d=document.createElement("div")
-d.innerText=i
-inv.appendChild(d)
-})
+<h2>${player.nome}</h2>
 
-}
+<p>Idade: ${player.idade}</p>
+<p>Classe: ${player.classe}</p>
 
-function move(dx,dy){
+<p>Ouro: ${player.ouro}</p>
 
-let nx=player.x+dx
-let ny=player.y+dy
+<h3>Atributos</h3>
 
-if(nx<0||ny<0||nx>=size||ny>=size)return
-if(map[ny][nx]=="tree")return
+Força
+<div class="bar"><div class="fill" style="width:${player.forca*10}%"></div></div>
 
-player.x=nx
-player.y=ny
+Inteligência
+<div class="bar"><div class="fill" style="width:${player.inteligencia*10}%"></div></div>
 
-checkItems()
-checkEnemies()
+Carisma
+<div class="bar"><div class="fill" style="width:${player.carisma*10}%"></div></div>
 
-draw()
+Sorte
+<div class="bar"><div class="fill" style="width:${player.sorte*10}%"></div></div>
 
-}
+Mana
+<div class="bar"><div class="fill" style="width:${player.mana*10}%"></div></div>
 
-function checkItems(){
+<br>
 
-items=items.filter(i=>{
+<button onclick="avancarIdade()">Avançar 1 ano</button>
+<button onclick="verInventario()">Inventário</button>
+<button onclick="verRelacoes()">Relações</button>
 
-if(i.x===player.x && i.y===player.y){
+<div id="eventos"></div>
 
-player.gold+=10
-player.inv.push("moeda antiga")
-log("Você encontrou ouro!")
-
-return false
+`
 
 }
 
-return true
+function avancarIdade(){
 
-})
+player.idade++
 
-}
-
-function checkEnemies(){
-
-enemies.forEach(e=>{
-
-if(e.x===player.x && e.y===player.y){
-
-combat(e)
+eventoAleatorio()
 
 }
 
-})
+function eventoAleatorio(){
+
+let eventos=[eventoEspada,eventoMemoria,eventoOuro,eventoTreino]
+
+let e = eventos[Math.floor(Math.random()*eventos.length)]
+
+e()
 
 }
 
-function combat(enemy){
+function eventoEspada(){
 
-log("Um lobo ataca!")
+document.getElementById("eventos").innerHTML=`
 
-let dmg=player.str+Math.floor(Math.random()*5)
+<div class="event">
 
-enemy.hp-=dmg
+Você encontrou uma espada velha no celeiro.
 
-log("Você causa "+dmg)
+<br><br>
 
-if(enemy.hp<=0){
+<button onclick="pegarEspada()">Ficar com ela</button>
 
-log("Lobo morto")
+<button onclick="venderEspada()">Vender por 5 ouro</button>
 
-player.gold+=15
+</div>
 
-enemies=enemies.filter(x=>x!==enemy)
+`
+
+}
+
+function pegarEspada(){
+
+player.inventario.push("Espada velha")
+
+player.forca+=1
+
+mostrarStatus()
+
+}
+
+function venderEspada(){
+
+player.ouro+=5
+
+mostrarStatus()
+
+}
+
+function eventoMemoria(){
+
+document.getElementById("eventos").innerHTML=`
+
+<div class="event">
+
+Uma memória do mundo moderno surge...
+
+Você lembra de algo sobre tecnologia.
+
+<br><br>
+
+<button onclick="ideiaPolvora()">Tentar criar pólvora</button>
+
+<button onclick="ignorar()">Ignorar</button>
+
+</div>
+
+`
+
+}
+
+function ideiaPolvora(){
+
+if(player.inteligencia>4){
+
+player.ouro+=20
+
+alert("Você criou algo útil e vendeu a ideia!")
 
 }else{
 
-player.hp-=5
-log("Você sofre 5 dano")
+alert("Você falhou miseravelmente.")
 
 }
 
-if(player.hp<=0){
-alert("Você morreu")
-location.reload()
-}
+mostrarStatus()
 
 }
 
-function moveEnemies(){
+function ignorar(){
 
-enemies.forEach(e=>{
-
-let dx=Math.floor(Math.random()*3)-1
-let dy=Math.floor(Math.random()*3)-1
-
-let nx=e.x+dx
-let ny=e.y+dy
-
-if(nx>=0&&ny>=0&&nx<size&&ny<size){
-if(map[ny][nx]!=="tree"){
-e.x=nx
-e.y=ny
-}
-}
-
-})
-
-draw()
+mostrarStatus()
 
 }
 
-document.addEventListener("keydown",e=>{
+function eventoOuro(){
 
-if(e.key=="w"||e.key=="ArrowUp")move(0,-1)
-if(e.key=="s"||e.key=="ArrowDown")move(0,1)
-if(e.key=="a"||e.key=="ArrowLeft")move(-1,0)
-if(e.key=="d"||e.key=="ArrowRight")move(1,0)
+let valor=rand(3,10)
 
-})
+player.ouro+=valor
 
-createMap()
-spawnEnemies()
-spawnItems()
-draw()
+alert("Você encontrou "+valor+" moedas!")
 
-setInterval(moveEnemies,1200)
+mostrarStatus()
 
-log("Bem-vindo a Eldoria.")
+}
+
+function eventoTreino(){
+
+document.getElementById("eventos").innerHTML=`
+
+<div class="event">
+
+Você quer treinar algo.
+
+<br><br>
+
+<button onclick="treinarForca()">Treinar força</button>
+<button onclick="estudar()">Estudar</button>
+
+</div>
+
+`
+
+}
+
+function treinarForca(){
+
+player.forca++
+
+mostrarStatus()
+
+}
+
+function estudar(){
+
+player.inteligencia++
+
+mostrarStatus()
+
+}
+
+function verInventario(){
+
+alert("Inventário: "+player.inventario.join(", "))
+
+}
+
+function verRelacoes(){
+
+alert("Pai: "+player.relacoes.pai+" | Mãe: "+player.relacoes.mae)
+
+}
+
+function rand(min,max){
+
+return Math.floor(Math.random()*(max-min+1))+min
+
+}
+
+startGame()
 
 </script>
 
