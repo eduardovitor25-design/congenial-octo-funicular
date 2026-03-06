@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Isekai Life</title>
+
+<style>
+
+body{
+background:#111;
+color:white;
+font-family:system-ui;
+padding:40px;
+}
+
+#story{
+height:400px;
+overflow:auto;
+background:#1a1a1a;
+padding:20px;
+border-radius:10px;
+margin-bottom:20px;
+}
+
+input{
+width:70%;
+padding:10px;
+}
+
+button{
+padding:10px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h1>Isekai Life</h1>
+
+<div id="story"></div>
+
+<input id="action" placeholder="O que seu personagem faz?">
+
+<button onclick="send()">Enviar</button>
+
+<script>
+
+const storyDiv = document.getElementById("story")
+
+async function send(){
+
+const action = document.getElementById("action").value
+
+storyDiv.innerHTML += "<p><b>Você:</b> "+action+"</p>"
+
+const response = await fetch("https://SEU-SERVIDOR.onrender.com/story",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+action:action
+})
+
+})
+
+const data = await response.json()
+
+storyDiv.innerHTML += "<p>"+data.text+"</p>"
+
+}
+
+</script>
+
+</body>
+</html>
