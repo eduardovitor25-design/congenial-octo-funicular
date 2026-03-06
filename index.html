@@ -1,296 +1,152 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Isekai Life — v5.0 (Ultra)</title>
-<style>
-  :root{--accent:#67ff8d;--bg:#070809;--card:rgba(18,20,22,0.90);--muted:#cbd5e1;--danger:#ff6b6b}
-  html,body{height:100%;margin:0;font-family:Inter,system-ui,Roboto,Arial;background:
-    linear-gradient(180deg, rgba(0,0,0,0.6), rgba(0,0,0,0.85)),
-    url('https://images.unsplash.com/photo-1503264116251-35a269479413?q=80&w=1600&auto=format&fit=crop') center/cover fixed;color:#e6eef3}
-  .wrap{max-width:1200px;margin:20px auto;display:grid;grid-template-columns:320px 1fr 320px;gap:16px;padding:12px}
-  .card{background:var(--card);padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.03);box-shadow:0 10px 30px rgba(0,0,0,0.5)}
-  h1{margin:0 0 6px 0;font-weight:700}
-  .muted{font-size:13px;color:rgba(230,238,243,0.85)}
-  .stat{margin:8px 0}
-  .bar{height:10px;background:rgba(255,255,255,0.06);border-radius:999px;overflow:hidden}
-  .fill{height:100%;background:linear-gradient(90deg,var(--accent),#2fe4b8);width:40%}
-  .buttons{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
-  button{background:#222;border:1px solid rgba(255,255,255,0.04);color:var(--muted);padding:8px 10px;border-radius:8px;cursor:pointer;font-weight:700}
-  button.primary{background:linear-gradient(180deg,#2b2b2b,#343434);color:white}
-  #story{height:68vh;overflow:auto;padding:12px;background:linear-gradient(180deg,rgba(0,0,0,0.12),rgba(0,0,0,0.03));border-radius:8px;border:1px solid rgba(255,255,255,0.02)}
-  .msg{margin-bottom:12px}
-  .who{font-weight:700;margin-bottom:6px}
-  .text{white-space:pre-wrap;line-height:1.45}
-  .inputRow{display:flex;gap:8px;margin-top:12px}
-  input[type="text"]{flex:1;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:rgba(255,255,255,0.02);color:inherit}
-  .choice{display:inline-block;background:rgba(255,255,255,0.04);padding:6px 10px;border-radius:999px;margin:6px 6px 0 0;cursor:pointer;font-size:13px}
-  .spinner{display:inline-block;width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,0.12);border-top-color:var(--accent);animation:spin 1s linear infinite;vertical-align:middle;margin-left:8px}
-  @keyframes spin{to{transform:rotate(360deg)}}
-  @media (max-width:1000px){ .wrap{grid-template-columns:1fr; padding:10px} .card{margin-bottom:12px} #story{height:55vh} }
-</style>
-</head>
-<body>
-<div class="wrap">
-  <!-- LEFT -->
-  <div class="card" aria-label="status">
-    <h1>Isekai Life <small style="font-weight:400">v5.0</small></h1>
-    <div class="muted">Personagem: <strong id="playerName">Garuk</strong></div>
-    <div class="stat">Idade: <strong id="age">10</strong></div>
-    <div class="stat">Vida: <strong id="hp">100</strong></div>
-    <div class="bar" aria-hidden><div id="hpFill" class="fill" style="width:100%"></div></div>
-
-    <div style="display:flex;gap:10px;margin-top:10px">
-      <div style="flex:1"><div class="muted">Ouro</div><div id="gold">45</div></div>
-      <div style="flex:1"><div class="muted">Reputação</div><div id="rep">0</div></div>
-    </div>
-
-    <hr style="opacity:0.06;margin:12px 0">
-    <div class="muted">Atributos</div>
-    <div class="muted" style="margin-top:8px">Força <span id="s_str">40</span></div><div class="bar"><div id="fill_str" class="fill" style="width:40%"></div></div>
-    <div class="muted" style="margin-top:8px">Inteligência <span id="s_int">60</span></div><div class="bar"><div id="fill_int" class="fill" style="width:60%"></div></div>
-    <div class="muted" style="margin-top:8px">Carisma <span id="s_chr">30</span></div><div class="bar"><div id="fill_chr" class="fill" style="width:30%"></div></div>
-    <div class="muted" style="margin-top:8px">Sorte <span id="s_lck">50</span></div><div class="bar"><div id="fill_lck" class="fill" style="width:50%"></div></div>
-
-    <div class="buttons" style="margin-top:12px">
-      <button id="btnYear" class="primary">Avançar Ano</button>
-      <button id="btnTrain">Treinar</button>
-      <button id="btnRest">Descansar</button>
-      <button id="btnExplore">Explorar</button>
-    </div>
-
-    <hr style="opacity:0.06;margin:12px 0">
-    <div class="muted">Inventário</div>
-    <div id="inventoryArea" style="margin-top:8px;max-height:20vh;overflow:auto"></div>
-  </div>
-
-  <!-- CENTER -->
-  <div class="card" role="main" aria-live="polite">
-    <div style="display:flex;justify-content:space-between;align-items:center">
-      <div><div class="muted">Local: <strong id="location">Floresta de Elyndar</strong></div></div>
-      <div class="muted">Modo IA: <span id="iaMode">API</span></div>
-    </div>
-
-    <div id="story" aria-live="polite" style="margin-top:12px;flex:1"></div>
-
-    <div style="margin-top:12px">
-      <div class="inputRow">
-        <input id="playerInput" type="text" placeholder='Ex: Garuk: "Quem é você?" ou "Atacar Leo"' maxlength="700" />
-        <button id="sendBtn" class="primary">Enviar</button>
-        <button id="btnExamples">Ex</button>
-      </div>
-      <div class="muted" style="margin-top:8px">Use linguagem natural — fale, aja ou descreva.</div>
-    </div>
-  </div>
-
-  <!-- RIGHT -->
-  <div class="card" aria-label="ações rápidas">
-    <div class="muted">Ações rápidas</div>
-    <div style="margin-top:8px">
-      <div class="choice" data-action='Garuk: "Quem é você?"'>Perguntar quem é</div>
-      <div class="choice" data-action='Garuk: "Quer trabalhar junto?"'>Propor parceria</div>
-      <div class="choice" data-action='Garuk tenta roubar a bolsa.'>Tentar roubar</div>
-      <div class="choice" data-action='Garuk oferece ouro.'>Oferecer ouro</div>
-    </div>
-
-    <hr style="opacity:0.06;margin:12px 0">
-    <label><input type="checkbox" id="forceFallback"> Forçar fallback local (sem IA)</label>
-
-    <hr style="opacity:0.06;margin:12px 0">
-    <div class="muted">Versão</div><div style="margin-top:6px"><strong>Isekai Life v5.0 (Ultra)</strong></div>
-  </div>
-</div>
-
-<div id="version">Isekai Life v5.0</div>
-
+<!-- Substitua/adicione este script no final do index.html -->
 <script>
-/* =========================
-   CONFIG + ESTADO INICIAL
-   ========================= */
-const API_PATH = "/api/narrate";
+const API_PATH = "/api/narrate"; // ajuste se backend estiver em outro host
+const TIMEOUT_MS = 12000;
 let sessionId = localStorage.getItem("isekai_session") || ("s_"+Math.random().toString(36).slice(2,10));
 localStorage.setItem("isekai_session", sessionId);
 
-const state = {
-  player: { name:"Garuk", age:10, hp:100, gold:45, reputation:0, stats:{ strength:4, intelligence:6, charisma:3, luck:5, mana:2 }, inventory:[{name:"Espada velha",power:3}] },
-  location: "Floresta de Elyndar",
-  npcs: [{name:"Leo", role:"caçador", attitude:"desconfiado", memory:[]}],
-  world: { towns:[], quests:[] },
-  story: []
-};
-
-/* =========================
-   DIALOGUE + WORLD MANAGER
-   - interpreta intenção
-   - mantém memória NPC
-   - gera quests e eventos procedurais
-   ========================= */
-class UltraManager {
-  constructor(state){ this.state = state; this.personas = { Leo: { role:"caçador", trust:0, hostility:0, memory:[] } }; }
-  compactContext(n=14){
-    const recent = this.state.story.slice(-n).map(s=>`${s.who}: ${s.text}`);
-    return { recent, player: { name:this.state.player.name, hp:this.state.player.hp }, location: this.state.location, npcs: this.state.npcs.map(n=>({name:n.name, role:n.role})) };
-  }
-  // interpretar intenção básica (padrões mais ricos)
-  interpretarIntencao(text){
-    const t = (text||"").toLowerCase();
-    if(/^(oi|ola|olá|saud|salve)/.test(t)) return "cumprimento";
-    if(/\b(quem|nome)\b/.test(t)) return "pergunta_nome";
-    if(/\b(seguir|vamos|ir|siga)\b/.test(t)) return "seguir";
-    if(/\b(investigar|ver|olhar|examinar)\b/.test(t)) return "investigar";
-    if(/\b(n[aã]o|recusar|nego)\b/.test(t)) return "recusar";
-    if(/\b(atacar|matar|lutar|esfaquear|roubar)\b/.test(t)) return "ataque";
-    if(/\b(ajudar|trabalhar|parceria)\b/.test(t)) return "parceria";
-    if(/\b(vender|comprar|preco|preço)\b/.test(t)) return "comercio";
-    return "neutro";
-  }
-  localNarrative(action){
-    // fallback mais rico: usa intenção + estado do NPC para variar respostas
-    const intent = this.interpretarIntencao(action);
-    const leo = this.personas.Leo;
-    if(intent === "cumprimento"){
-      if(!leo.memory.includes("conhece")){
-        leo.memory.push("conhece"); return { narrative: 'Leo sorri. "Saudações. Sou Leo, cuido das trilhas por aqui."', choices:[{text:"Pedir trabalho"},{text:"Perguntar sobre ruínas"}], updates:{} };
-      }
-      return { narrative: 'Leo acena: "Já nos conhecemos, viajante."', choices:[{text:"Perguntar sobre ruínas"},{text:"Seguir em frente"}], updates:{} };
-    }
-    if(intent === "pergunta_nome"){ return { narrative: 'Leo: "Nome? Sou Leo, caçador."', choices:[{text:"Pedir ajuda"},{text:"Ir embora"}], updates:{} }; }
-    if(intent === "seguir"){ leo.trust = (leo.trust||0)+1; return { narrative: 'Leo sobe o caminho: "Siga-me, eu conheço atalhos para as ruínas."', choices:[{text:"Seguir Leo"},{text:"Ficar"}], updates:{} }; }
-    if(intent === "investigar"){ return { narrative: 'Leo examina as marcas: "Marcas de garras — reconheço este padrão, talvez lobos grandes."', choices:[{text:"Investigar marcas"},{text:"Montar armadilha"}], updates:{} }; }
-    if(intent === "recusar"){ return { narrative: 'Leo dá de ombros: "Como quiser. Não te perderei o sono."', choices:[{text:"Conversar"},{text:"Ir embora"}], updates:{} }; }
-    if(intent === "ataque"){ leo.hostility = (leo.hostility||0) + 2; const dmg = Math.floor(Math.random()*18)+6; return { narrative:`Confronto! Leo reage e você recebe ${dmg} de dano.`, choices:[{text:"Lutar"},{text:"Desculpar-se"}], updates:{hp:-dmg} }; }
-    if(intent === "parceria"){ leo.trust = (leo.trust||0)+2; return { narrative:'Leo considera: "Uma parceria? Podemos dividir lucros de caçadas."', choices:[{text:"Combinar divisão"},{text:"Recusar"}], updates:{} }; }
-    if(intent === "comercio"){ const gold = Math.floor(Math.random()*10)+5; return { narrative:`Você viu mercadores; vendeu algo por ${gold} moedas.`, choices:[{text:"Comprar equipamento"},{text:"Guardar ouro"}], updates:{gold:+gold} }; }
-    // neutro
-    const templates = [
-      "Leo observa o ambiente com olhos atentos.",
-      "O vento passa; Leo comenta sobre a lua cheia que atrai predadores.",
-      "Leo limpa a lâmina e espera sua próxima decisão."
-    ];
-    return { narrative: templates[Math.floor(Math.random()*templates.length)], choices:[{text:"Perguntar sobre trilhas"},{text:"Continuar andando"}], updates:{} };
-  }
-  // gerar um quest simples (procedural)
-  generateQuest(){
-    const types = ["caçar lobos","explorar ruína","reparar moinho","encontrar erva rara"];
-    const t = types[Math.floor(Math.random()*types.length)];
-    const reward = Math.floor(Math.random()*40)+20;
-    const q = { id: "q_"+Date.now(), title:`${t}`, reward, status:"open" };
-    this.state.world.quests.push(q);
-    return q;
-  }
-}
-
-/* =========================
-   HELPERS UI + segurança
-   ========================= */
+// small safety: escape HTML function (already present in código maior)
 function escapeHtml(s){ return (s+"").replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[c])); }
+
 function appendMessage(who, text){
-  state.story.push({ who, text, time: Date.now() });
   const s = document.getElementById("story");
-  const block = document.createElement("div"); block.className = "msg";
+  const block = document.createElement("div");
+  block.className = "msg";
   block.innerHTML = `<div class="who">${escapeHtml(who)}</div><div class="text">${escapeHtml(text)}</div>`;
-  s.appendChild(block); s.scrollTop = s.scrollHeight;
-}
-function appendSystem(text){ appendMessage("Narrador", text); }
-function appendPlayer(text){ appendMessage(state.player.name, text); }
-function appendNPC(name, text){ appendMessage(name, text); }
-
-/* =========================
-   REDES: envio com timeout, bloqueio e fallback
-   ========================= */
-const UM = new UltraManager(state);
-
-function disableInputs(dis){
-  document.getElementById("sendBtn").disabled = dis;
-  document.getElementById("playerInput").disabled = dis;
-  const spinner = document.getElementById("sendSpinner");
-  if(dis && !spinner){
-    const sp = document.createElement("span"); sp.id="sendSpinner"; sp.className="spinner"; document.getElementById("sendBtn").appendChild(sp);
-  } else if(!dis && spinner){ spinner.remove(); }
+  s.appendChild(block);
+  s.scrollTop = s.scrollHeight;
+  // persist minimal history
+  try {
+    const h = JSON.parse(localStorage.getItem("isekai_history")||"[]");
+    h.push({who,text,time:Date.now()});
+    localStorage.setItem("isekai_history", JSON.stringify(h.slice(-120)));
+  } catch(e){}
 }
 
+function setProcessing(on){
+  const btn = document.getElementById("sendBtn");
+  const input = document.getElementById("playerInput");
+  btn.disabled = on;
+  input.disabled = on;
+  if(on){
+    if(!document.getElementById("procSpinner")){
+      const sp = document.createElement("span"); sp.id="procSpinner"; sp.className="spinner";
+      btn.appendChild(sp);
+    }
+  } else {
+    const sp = document.getElementById("procSpinner"); if(sp) sp.remove();
+  }
+}
+
+// send action -> server; fallback if anything fails
 async function sendAction(actionText){
   if(!actionText) return;
-  appendPlayer(actionText);
-  const force = document.getElementById("forceFallback").checked;
-  disableInputs(true);
+  appendMessage("Você", actionText);
+  setProcessing(true);
+  const forceFallback = document.getElementById("forceFallback")?.checked;
   try{
-    if(force){ const out = UM.localNarrative(actionText); applyNarrative(out); return; }
-    const payload = { sessionId, action: actionText, context: UM.compactContext(12) };
-    const controller = new AbortController(); const timeoutId = setTimeout(()=>controller.abort(), 14000);
+    if(forceFallback){
+      // simple fallback here
+      const out = localFallback(actionText);
+      applyNarrative(out);
+      return;
+    }
+    const payload = { sessionId, action: actionText, context: { recent: getRecentStory(12) } };
+    const controller = new AbortController();
+    const timeoutId = setTimeout(()=> controller.abort(), TIMEOUT_MS);
     const res = await fetch(API_PATH, { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify(payload), signal: controller.signal });
     clearTimeout(timeoutId);
-    if(!res.ok){ const txt = await res.text().catch(()=>""); console.warn("API error",res.status,txt); const out = UM.localNarrative(actionText); applyNarrative(out); return; }
+    if(!res.ok){
+      console.warn("API non-ok:", res.status);
+      const out = localFallback(actionText);
+      applyNarrative(out);
+      return;
+    }
     const data = await res.json();
     applyNarrative(data);
-  } catch(err){
-    console.warn("Network/API error -> fallback", err);
-    const out = UM.localNarrative(actionText); applyNarrative(out);
+  }catch(err){
+    console.warn("Network/API fail -> fallback", err);
+    const out = localFallback(actionText);
+    applyNarrative(out);
   } finally {
-    disableInputs(false); renderAll(); try{ localStorage.setItem("isekai_history", JSON.stringify(state.story.slice(-60))); }catch(e){}
+    setProcessing(false);
   }
 }
 
 function applyNarrative(data){
+  // data: { narrative, choices, updates, npc }
   if(typeof data === "string") data = { narrative: data };
-  if(data.narrative) appendSystem(data.narrative);
-  if(data.npc) appendNPC(data.npc.name, data.npc.text);
+  if(data.narrative) appendMessage("Narrador", data.narrative);
+  if(data.npc) appendMessage(data.npc.name || "NPC", data.npc.text || "");
   if(Array.isArray(data.choices) && data.choices.length){
-    const s = document.getElementById("story"); const block = document.createElement("div"); block.className = "msg";
-    block.innerHTML = `<div class="who">Escolhas</div>`; const inner = document.createElement("div"); inner.className="text";
-    data.choices.forEach(c=>{ const ch = document.createElement("span"); ch.className="choice"; ch.textContent = c.text; ch.onclick = ()=> sendAction(c.text); inner.appendChild(ch); });
+    const s = document.getElementById("story");
+    const block = document.createElement("div"); block.className="msg";
+    block.innerHTML = `<div class="who">Escolhas</div>`;
+    const inner = document.createElement("div"); inner.className="text";
+    data.choices.forEach(c => {
+      const ch = document.createElement("span"); ch.className="choice"; ch.textContent = c.text;
+      ch.onclick = ()=> { sendAction(c.text); };
+      inner.appendChild(ch);
+    });
     block.appendChild(inner); s.appendChild(block); s.scrollTop = s.scrollHeight;
   }
+  // apply updates defensivamente
   if(data.updates){
-    const u = data.updates;
-    if(typeof u.hp === "number") state.player.hp = Math.max(0, Math.min(300, state.player.hp + u.hp));
-    if(typeof u.gold === "number") state.player.gold += u.gold;
-    if(u.inventoryAdd && typeof u.inventoryAdd.name === "string") state.player.inventory.push(u.inventoryAdd);
-    if(u.statChanges && typeof u.statChanges === "object") Object.entries(u.statChanges).forEach(([k,v])=>{ if(typeof v === "number" && state.player.stats[k] !== undefined) state.player.stats[k] += v; });
+    if(typeof data.updates.hp === "number"){
+      const hpEl = document.getElementById("hp");
+      const fill = document.getElementById("hpFill");
+      // clamp and update state: front-end expects to track state; if you have state object, update there
+      const newHp = Math.max(0, Math.min(300, Number(data.updates.hp) + Number(hpEl?.textContent || 0)));
+      if(hpEl) hpEl.textContent = newHp;
+      if(fill) fill.style.width = Math.min(100, (newHp/3)) + "%";
+    }
+    if(typeof data.updates.gold === "number"){
+      const goldEl = document.getElementById("gold");
+      if(goldEl) goldEl.textContent = Number(goldEl.textContent || 0) + data.updates.gold;
+    }
   }
-  renderAll();
 }
 
-/* =========================
-   UI events
-   ========================= */
-document.getElementById("sendBtn").onclick = ()=> { const txt = document.getElementById("playerInput").value.trim(); if(!txt) return; document.getElementById("playerInput").value=""; sendAction(txt); };
-document.getElementById("playerInput").addEventListener("keydown", e=>{ if(e.key==="Enter"){ e.preventDefault(); document.getElementById("sendBtn").click(); }});
-document.getElementById("btnYear").onclick = ()=> { state.player.age++; appendSystem(`Você avançou um ano. Agora ${state.player.age}.`); sendAction(`${state.player.name} viveu mais um ano. Descreva um acontecimento marcante.`); renderAll(); };
-document.getElementById("btnTrain").onclick = ()=> { const keys = Object.keys(state.player.stats); const k = keys[Math.floor(Math.random()*keys.length)]; state.player.stats[k] += 1; appendSystem(`Treinamento: +1 em ${k}.`); renderAll(); };
-document.getElementById("btnRest").onclick = ()=> { const heal = 10 + Math.floor(Math.random()*15); state.player.hp = Math.min(300, state.player.hp + heal); appendSystem(`Você descansou e recuperou ${heal} HP.`); renderAll(); };
-document.getElementById("btnExplore").onclick = ()=> { const found = Math.random()<0.6 ? {name:"Poção de cura",type:"heal",value:20} : {name:"Fragmento antigo",type:"artifact",power:2}; state.player.inventory.push(found); appendSystem(`Exploração: você encontrou ${found.name}.`); renderAll(); sendAction(`${state.player.name} explora ${state.location} e encontra ${found.name}. Crie 2 opções.`); };
-document.getElementById("btnExamples").onclick = ()=> { document.getElementById("playerInput").value = 'Garuk: "Quem é você?"'; };
-document.querySelectorAll(".choice").forEach(el=>el.addEventListener("click", ()=>{ const action = el.dataset.action; sendAction(action); }));
-
-/* =========================
-   RENDER helpers
-   ========================= */
-function renderAll(){ renderStats(); renderInventory(); }
-function renderStats(){
-  document.getElementById("playerName").textContent = state.player.name;
-  document.getElementById("age").textContent = state.player.age;
-  document.getElementById("hp").textContent = state.player.hp;
-  document.getElementById("hpFill").style.width = Math.max(0,Math.min(100,(state.player.hp/3))) + "%"; // scaled
-  document.getElementById("gold").textContent = state.player.gold;
-  document.getElementById("rep").textContent = state.player.reputation;
-  document.getElementById("s_str").textContent = state.player.stats.strength*10; document.getElementById("fill_str").style.width = Math.min(100,state.player.stats.strength*10)+"%";
-  document.getElementById("s_int").textContent = state.player.stats.intelligence*10; document.getElementById("fill_int").style.width = Math.min(100,state.player.stats.intelligence*10)+"%";
-  document.getElementById("s_chr").textContent = state.player.stats.charisma*10; document.getElementById("fill_chr").style.width = Math.min(100,state.player.stats.charisma*10)+"%";
-  document.getElementById("s_lck").textContent = state.player.stats.luck*10; document.getElementById("fill_lck").style.width = Math.min(100,state.player.stats.luck*10)+"%";
-  document.getElementById("location").textContent = state.location;
+// tiny fallback parser for immediate responses (keeps NPCs, diversity)
+function localFallback(text){
+  const t = (text||"").toLowerCase();
+  if(t.includes("vai embora") || t.includes("sai") || t.includes("adeus")){
+    return { narrative: "Leo observa por um momento, depois vira as costas e some entre as árvores.", choices:[{text:"Seguir sozinho"},{text:"Voltar ao acampamento"}], updates:{} };
+  }
+  if(t.includes("renascer") || t.includes("reencarno") || t.includes("reencarno")){
+    // reset story signal
+    return { narrative: "Você sente a realidade rasgar — tudo escurece e quando abre os olhos, é outro mundo.", choices:[{text:"Olhar ao redor"},{text:"Levantar-se"}], updates:{ hp: 100 } };
+  }
+  // default varied templates
+  const templates = [
+    "O vento carrega um cheiro de fumaça. Algo se move entre as árvores.",
+    "Uma sensação estranha percorre suas costas. Você tem a impressão de que algo te observa.",
+    "Leo apóia a mão na lança e diz: 'Cuidado com o que procura.'"
+  ];
+  return { narrative: templates[Math.floor(Math.random()*templates.length)], choices:[{text:"Investigar"},{text:"Seguir"}], updates:{} };
 }
-function renderInventory(){ const n = document.getElementById("inventoryArea"); n.innerHTML=""; if(state.player.inventory.length===0){ n.innerHTML="<div class='muted'>vazio</div>"; return; } state.player.inventory.forEach((it,idx)=>{ const div = document.createElement("div"); div.className="muted"; div.innerHTML = `${escapeHtml(it.name)} ${it.power?("• pwr:"+escapeHtml(it.power)):""} <button style="float:right" onclick="useItem(${idx})">usar</button>`; n.appendChild(div); }); }
-window.useItem = function(idx){ const it = state.player.inventory[idx]; if(!it) return; if(it.type==="heal"||it.name.toLowerCase().includes("poção")){ state.player.hp = Math.min(300,state.player.hp + (it.value||20)); state.player.inventory.splice(idx,1); appendSystem(`Você usou ${it.name} e recuperou vida.`); } else appendSystem(`Você examina ${it.name}.`); renderAll(); }
 
-/* =========================
-   Carregamento inicial / persistência
-   ========================= */
-try{ const h = JSON.parse(localStorage.getItem("isekai_history")||"[]"); if(Array.isArray(h) && h.length){ h.forEach(m=>appendMessage(m.who,m.text)); state.story = h.slice(); } }catch(e){ /* ignore */ }
+function getRecentStory(n=12){
+  try{ const h = JSON.parse(localStorage.getItem("isekai_history")||"[]"); return h.slice(-n).map(x=>`${x.who}: ${x.text}`); }catch(e){ return []; }
+}
 
-renderAll();
-appendSystem("Cena: você caminha pela Floresta de Elyndar e encontra Leo, um caçador. Digite algo para conversar/agir.");
+// reset world button
+function resetWorld(){
+  localStorage.removeItem("isekai_history");
+  // optionally call server to reset session (if implemented)
+  appendMessage("Sistema","Mundo reiniciado. Você reencarna em outro lugar.");
+}
+
+// hookup: input, send button, extra actions
+document.getElementById("sendBtn").addEventListener("click", ()=> {
+  const txt = document.getElementById("playerInput").value.trim();
+  if(!txt) return;
+  document.getElementById("playerInput").value = "";
+  sendAction(txt);
+});
+document.getElementById("playerInput").addEventListener("keydown", e => { if(e.key === "Enter"){ e.preventDefault(); document.getElementById("sendBtn").click(); }});
+
+// expose reset button (create in UI if you want)
+window.resetWorld = resetWorld;
+
 </script>
-</body>
-</html>
